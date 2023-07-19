@@ -1,0 +1,204 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>Cygnus Dark's blog</title><meta name="description" content="Sr. Data Engineer at Baidu."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/cygnusdark/images/favicon.ico"><link rel="stylesheet" href="/cygnusdark/style/common/bulma.css"><link rel="stylesheet" href="/cygnusdark/style/base.css"><link rel="stylesheet" href="/cygnusdark/style/common/helper.css"><script src="/cygnusdark/js/common.js"></script><link rel="stylesheet" href="/cygnusdark/style/widget-post-list.css"><meta name="generator" content="Hexo 6.3.0"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/cygnusdark/">Cygnus Dark's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/cygnusdark/">博客</a></h3><h3 class="is-inline-block"><a href="/cygnusdark/about">个人简介</a></h3><h3 class="is-inline-block"><a href="/cygnusdark/archives">文章</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/cygnusdark/">博客</a></h3><h3 class="is-inline-block"><a href="/cygnusdark/about">个人简介</a></h3><h3 class="is-inline-block"><a href="/cygnusdark/archives">文章</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/Flink"><i class="tag post-item-tag">Flink</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2023/07/01/Flink%20Checkpoint%E6%9C%BA%E5%88%B6/">Flink Checkpoint机制</a></h2><time class="has-text-grey" datetime="2023-07-01T00:00:00.000Z">2023-07-01</time><p class="is-flex-grow-2 mt-2">checkpoint的过程包含了JobManager和Taskmanager端task的执行过程，按照步骤为
+在JobManager端构建ExecutionGraph过程中会创建CheckpointCoordinator，这是负责checkpoint的核心实现类，同时会给job添加一个监听器CheckpointCoordinatorDeActivator（只有设置了checkpoint才会注册这个监听器），在JobManager端开始进行任务调度的时候，会对job的状态进行转换，由CREATED转成RUNNING，job监听器CheckpointCoordinatorDeActivator就开始启动checkpoint的定时任务了，最终会调用CheckpointCoordinator.startCheckp..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2023/07/01/Flink%20Checkpoint%E6%9C%BA%E5%88%B6/">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/cygnusdark/images/tag-bg.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/cygnusdark/2023/07/01/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/"><img class="post-cover-img js-img-fadeIn" src="/cygnusdark/images/tag-bg.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB"><i class="tag post-item-tag">技术分享</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2023/07/01/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/">技术规划50问</a></h2><time class="has-text-grey" datetime="2023-07-01T00:00:00.000Z">2023-07-01</time><p class="is-flex-grow-2 mt-2">
+
+如何调整技术方向如何平衡技术开发和业务交付精力？
+技术规划应该包括哪些内容？
+   如何做一个业务上能落地而且会落地，而不是高高在上的技术规划
+   技术预研的舍与得如何去平衡（效率&amp;amp;成本&amp;amp;其他等等），开源以及自研技术，有哪些倾向性选择？
+   技术规划如何更能接地气，可持续？
+   技术规划有没有好的方法论或者最佳实践？
+   如何推动技术规划真正落地，实现价值
+   技术规划的出发点是什么？与产品规划如何同步？
+如何合理的制定短期规划和长期规划？
+技术规划如何能做到业界领先，如何能让高层信服，如何能保证高质量落地？
+技术规划有什么机制保障尽可能的落地？
+如何结合业界趋势，做出贴合业务带来收益的实际产品？这中间有没有什么方法论？
+如何看到领域内远期的（3-5）年的技术&amp;#x2F;产品趋..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2023/07/01/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/Flink"><i class="tag post-item-tag">Flink</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/12/01/Flink%20%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">Flink 保证数据一致性</a></h2><time class="has-text-grey" datetime="2022-12-01T00:00:00.000Z">2022-12-01</time><p class="is-flex-grow-2 mt-2">在Flink中，会自动做检查点，用于故障时恢复一个应用。在恢复时，application的state信息可以根据最近完成的检查点进行重建，并继续运行。不过，仅将一个application的state进行重置并不足以满足exactly-once的保证。
+为了给一个应用提供exactly-once保证，在应用根据检查点重置state时，它的每个source connector都应该有能力将它的read position重置到做检查点时的read position。在做一个检查点时，source operator将它的read position也持久化，并在恢复时根据此位置进行重置。对于这类可以重置read position的source connector，比较有代表性的有：
+基于文件的源：可以存储读文件字节流..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/12/01/Flink%20%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/Flink"><i class="tag post-item-tag">Flink</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/">Flink 数据倾斜优化</a></h2><time class="has-text-grey" datetime="2022-12-01T00:00:00.000Z">2022-12-01</time><p class="is-flex-grow-2 mt-2">定义当进行聚合运算时（GroupBy&amp;#x2F;KeyBy + Agg），如果聚合所使用的key存在热点，则会导致数据倾斜。如统计某日各个省份的车流量，则负责运算北京、上海等一线城市的count subtask节点则会成为热点，处理数据的压力会比较大。
+危害任务卡死keyBy 或 rebalance 下游的算子，如果单个 subtask 存在热点并完全卡死，会把整个 Flink 任务卡死。看如下示例：如下图所示，上游每个 Subtask 中会有 3 个 resultSubPartition，连接下游算子的 3 个 subtask。下游每个 subtask 会有 2 个 InputChannel，连接上游算子的 2 个 subtask。Local BufferPool为subtask中的ResultSubpa..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">多线程</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/11/01/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">多线程常见问题</a></h2><time class="has-text-grey" datetime="2022-11-01T00:00:00.000Z">2022-11-01</time><p class="is-flex-grow-2 mt-2">线程的状态有哪些？线程的生命周期大致分为5个阶段：NEW（新建）：新建一个Thread对象时，此时还没有线程。RUNNABLE（就绪）：调用start方法可以使线程进入就绪状态。RUNNING（运行）：处于就绪状态的线程获得了CPU就可以执行业务，进入运行状态。BLOCKED（阻塞）：处于运行状态的线程如果调用了sleep、wait方法或者竞争锁失败会进入阻塞状态。TERMINATED（终止）：线程正常结束或者意外终止会进入终止状态。线程的生命周期是比较基础的知识，一般是作为一个切入点有浅入深的问其他问题，在回答这个问题的时候不要干巴巴的只说5个状态单词，要把每个状态是怎么进入的也要讲一下。你如果不讲，面试官就会继续追问：那线程在哪些情况会进入阻塞状态呢？
+synchronized锁的升级机制synchro..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/11/01/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/MySQL"><i class="tag post-item-tag">MySQL</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/10/01/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/">数据库使用规范</a></h2><time class="has-text-grey" datetime="2022-10-01T00:00:00.000Z">2022-10-01</time><p class="is-flex-grow-2 mt-2">问题
+单表索引利用率不高，部分为单字段索引，同时未避免索引失效
+部分表单表数据过多，未进行及时拆表
+索引建立未避过业务高峰时间
+单次查询数据较多，未对数据量做限制
+慢查询大多数集中在统计或分页场景下，具体原因在于扫描行数过多引起
+
+后期规范建表
+[强制] 数据库表、字段必须增加中文注释，字符编码集采用utf8mb4
+[强制] 数据库字段必须为非空，设置默认值
+[强制] 单表列数目不可超过25个，若超过则应考虑拆表存储
+建议优先选择符合存储需求的最小数据类型，如unsigned无符号整型、char替换固定长度的varchar
+避免使用TEXT、BLOB数据类型
+
+SQL
+[强制] 查询数据必须限制数量级，不可频繁拉取大量数据；若业务需求，建议添加缓存层，以及相应的缓存更新机制
+[强制] 查询时指定所需的列，读..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/10/01/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">多线程</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/10/01/%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">线程间通信</a></h2><time class="has-text-grey" datetime="2022-10-01T00:00:00.000Z">2022-10-01</time><p class="is-flex-grow-2 mt-2">线程间通信常见问题
+三个线程分别打印 A，B，C，要求这三个线程一起运行，打印 n 次，输出形如“ABCABCABC…”
+两个线程交替打印 0~100 的奇偶数
+通过 N 个线程顺序循环打印从 0 至 100
+多线程按顺序调用，A-&amp;gt;B-&amp;gt;C，AA 打印 5 次，BB 打印10 次，CC 打印 15 次，重复 10 次
+用两个线程，一个输出字母，一个输出数字，交替输出 1A2B3C4D…26Z
+
+Lock解法 第一题import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class PrintABCUsingLock &amp;#123;
+
+    private i..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/10/01/%E7%BA%BF%E7%A8%8B%E9%97%B4%E9%80%9A%E4%BF%A1/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/LeetCode"><i class="tag post-item-tag">LeetCode</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/09/01/%E7%9B%9B%E6%9C%80%E5%A4%9A%E6%B0%B4%E7%9A%84%E5%AE%B9%E5%99%A8/">盛最多水的容器</a></h2><time class="has-text-grey" datetime="2022-09-01T00:00:00.000Z">2022-09-01</time><p class="is-flex-grow-2 mt-2">题目盛最多水的容器给定一个长度为 n 的整数数组 height 。有 n 条垂线，第 i 条线的两个端点是 (i, 0) 和 (i, height[i]) 。
+找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+返回容器可以储存的最大水量。
+说明：你不能倾斜容器。
+输入：[1,8,6,2,5,4,8,3,7]输出：49解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+解法双指针    public int maxArea(int[] height) &amp;#123;
+        int i = 0, j = height.length - 1, res = 0;
+        while(i &amp;lt; j..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/09/01/%E7%9B%9B%E6%9C%80%E5%A4%9A%E6%B0%B4%E7%9A%84%E5%AE%B9%E5%99%A8/">更多</a></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><header><a href="/cygnusdark/tags/LeetCode"><i class="tag post-item-tag">LeetCode</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/cygnusdark/2022/08/01/%E6%8E%A5%E9%9B%A8%E6%B0%B4/">接雨水</a></h2><time class="has-text-grey" datetime="2022-08-01T00:00:00.000Z">2022-08-01</time><p class="is-flex-grow-2 mt-2">题目接雨水输入：height &amp;#x3D; [0,1,0,2,1,0,1,3,2,1,2,1]输出：6解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。 
+解法双指针public int trap(int[] height) &amp;#123;
+    int left = 0, right = height.length - 1;
+    int ans = 0;
+    int left_max = 0, right_max = 0;
+    while (left &amp;lt; right) &amp;#123;
+        if (height[left] &amp;lt; height[right]) &amp;#123;
+    ..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/cygnusdark/2022/08/01/%E6%8E%A5%E9%9B%A8%E6%B0%B4/">更多</a></section></article></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--second-text-color);
+}
+.search-widget .search-content {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+    z-index: 2;
+
+    width: 100%;
+    height: 0;
+    max-height: 550px;
+
+    overflow: auto;
+    box-sizing: border-box;
+
+    background: var(--top-bar-bg-color);
+    backdrop-filter: blur(var(--backdropFilter));
+    -webkit-backdrop-filter: blur(var(--backdropFilter));
+
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-widget .search-content a:hover h5 {
+    color: #3273dc!important;
+}
+</style><main class="aside-card-container search-widget is-relative"><label for="searchInput"><div class="is-flex px-4" id="searchButton"><i class="iconfont icon--search1 mr-1"></i><input class="search-input is-flex-grow-1" id="searchInput" placeholder="搜索文章"></div></label><section class="search-content content" id="searchContent"></section></main><script>var searchDatabase = []
+var searchInputEl = document.getElementById('searchInput')
+var searchButtonEl = document.getElementById('searchButton')
+var searchResultEl = document.getElementById('searchContent')
+
+searchInputEl.oninput = function (evt) {
+    var searchValue = evt.srcElement.value
+    var haveSearchValue = Boolean(searchValue.trim())
+    if (!haveSearchValue) {
+        searchResultEl.style.height = 0
+        searchResultEl.innerHTML = null
+        return
+    }
+
+    var searchResults = searching(searchValue)
+
+    if (searchResults.length > 0) {
+        renderSearchResults(searchResults)
+    }
+}
+
+function renderSearchResults(results) {
+    searchResultEl.innerHTML = null
+    var fragment = document.createDocumentFragment()
+
+    results.forEach(function (item) {
+        var link = document.createElement('a')
+        var title = document.createElement('h5')
+        var content = document.createElement('p')
+
+        title.className = 'mb-1'
+        title.innerText = item.title
+        content.innerText = item.content
+
+        link.href = item.link
+        link.appendChild(title)
+        link.appendChild(content)
+        link.className = 'p-4 is-block'
+
+        fragment.appendChild(link)
+    })
+
+    searchResultEl.appendChild(fragment)
+    searchResultEl.style.height = 'auto'
+}
+
+function searching(inputText) {
+    var inputTexts = inputText.split(' ')
+    var searchResults = []
+    inputTexts.forEach(function (searchKey) {
+        var haveSearchValue = Boolean(searchKey.trim())
+        if (!haveSearchValue) return
+
+        var key = searchKey.toLowerCase()
+
+        for (var entry of searchDatabase) {
+            var title = entry.getElementsByTagName('title')[0].textContent
+            var link = entry.getElementsByTagName('link')[0].getAttribute('href')
+            var contentWithTags = entry.getElementsByTagName('content')[0].textContent
+            var rawContent = contentWithTags.trim().replace(/<[^>]+>/g, '').toLowerCase()
+
+            var LENGTH = 80
+            var finalContent = ''
+            var contentLength = rawContent.length
+            var searchResultIdx = rawContent.indexOf(key)
+
+            var startIdx = searchResultIdx - 20,
+                endIdx = startIdx + LENGTH
+
+            if (startIdx < 0) {
+                startIdx = 0
+                endIdx = 100
+            }
+
+            endIdx > contentLength && (endIdx = contentLength)
+
+            finalContent = rawContent.substring(startIdx, endIdx)
+
+            if (title.indexOf(key) > -1 || searchResultIdx > -1) {
+                searchResults.push({
+                    link: link,
+                    title: title,
+                    content: finalContent
+                })
+            }
+        }
+    })
+    return searchResults
+}
+
+searchButtonEl.onclick = function () {
+    if (searchDatabase.length > 0) return;
+
+    fetch(window.location.href + '/search.xml').then(res => res.text()).then(res => {
+        var domparser = new DOMParser
+        var doc = domparser.parseFromString(res, 'application/xml')
+        searchDatabase = doc.getElementsByTagName('search')[0].children
+    })
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="/cygnusdark/images/avatar.gif" alt="user avatar"></section><h3 class="user-name">Cygnus Dark</h3><blockquote class="has-text-centered is-relative"><span style="margin-bottom: 5px;">Sr. Data Engineer at Baidu.</span></blockquote><address class="has-text-centered has-text-grey"><i class="iconfont icon-location" style="margin-right: 5px;"></i><span class="has-text-grey">Beijing</span></address></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/cygnusdark"><i class="iconfont icon-github"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container recent-widget"><h3>最近</h3><ul><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=Fl" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2023/07/01/Flink%20Checkpoint%E6%9C%BA%E5%88%B6/">Flink Checkpoint机制</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2023-07-01T00:00:00.000Z">2023-07-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/cygnusdark/images/tag-bg.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2023/07/01/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/">技术规划50问</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2023-07-01T00:00:00.000Z">2023-07-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=Fl" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2022/12/01/Flink%20%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/">Flink 保证数据一致性</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-12-01T00:00:00.000Z">2022-12-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=Fl" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/">Flink 数据倾斜优化</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-12-01T00:00:00.000Z">2022-12-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=多线" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2022/11/01/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/">多线程常见问题</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-11-01T00:00:00.000Z">2022-11-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://ui-avatars.com/api/?background=f5f5f5&amp;name=数据" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/cygnusdark/2022/10/01/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E8%A7%84%E8%8C%83/">数据库使用规范</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-10-01T00:00:00.000Z">2022-10-01</time></section></li></ul></main><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/cygnusdark/categories/%E5%90%8E%E7%AB%AF/">后端</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/cygnusdark/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/cygnusdark/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/cygnusdark/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/cygnusdark/categories/%E7%AE%97%E6%B3%95/">算法</a><span class="category-list-count">2</span></li></ul></section></main><main class="aside-card-container archives-widget"><h3>文章</h3><section><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2023/07/">七月 2023</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2022/12/">十二月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2022/11/">十一月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2022/09/">九月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/cygnusdark/archives/2022/08/">八月 2022</a><span class="archive-list-count">1</span></li></ul></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/cygnusdark/tags/Flink"><span class="tag post-item-tag" style="margin-bottom: 5px;">Flink</span></a><a href="/cygnusdark/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B"><span class="tag post-item-tag" style="margin-bottom: 5px;">多线程</span></a><a href="/cygnusdark/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB"><span class="tag post-item-tag" style="margin-bottom: 5px;">技术分享</span></a><a href="/cygnusdark/tags/LeetCode"><span class="tag post-item-tag" style="margin-bottom: 5px;">LeetCode</span></a><a href="/cygnusdark/tags/MySQL"><span class="tag post-item-tag" style="margin-bottom: 5px;">MySQL</span></a></section></main><main class="aside-card-container friend-widget"><h3>个人主页</h3><section><a target="_blank" rel="noopener" href="https://www.github.com/cygnusdark"><span class="tag post-item-tag" style="margin-bottom: 5px;">我的Github</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/cygnusdark"><i class="iconfont icon-github"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Cygnus Dark 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by CygnusDark &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/cygnusdark">Theme by CygnusGarden&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/cygnusdark/cygnusgarden" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>
