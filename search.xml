@@ -4,11 +4,11 @@
   
     
     <entry>
-      <title>机器学习模型效果评估指标</title>
-      <link href="/2023/07/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/"/>
-      <url>/2023/07/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E6%95%88%E6%9E%9C%E8%AF%84%E4%BC%B0%E6%8C%87%E6%A0%87/</url>
+      <title>机器学习模型评价指标</title>
+      <link href="/2023/07/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87/"/>
+      <url>/2023/07/27/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87/</url>
       
-        <content type="html"><![CDATA[<blockquote><p>在机器学习模型中，准确率、AUC、召回率和精度是常用的性能指标，用于评估模型的表现。这些指标有着不同的含义和用途，下面逐一进行解释：</p></blockquote><ol><li>准确率（Accuracy）：指模型正确分类的样本数占总样本数的比例。准确率越高，表示模型分类的正确率越高。</li><li>AUC（Area Under the Curve）：指模型在 ROC 曲线下的面积。AUC 的值介于 0 到 1，越接近 1，表示模型分类的准确率越高。</li><li>召回率（Recall）：指模型正确识别的正样本数占所有正样本的比例。召回率越高，表示模型能够捕捉到更多的正样本，但可能会将一些负样本错误地分类为正样本。</li><li>精度（Precision）：指模型正确识别的正样本数占所有被分类为正样本的样本的比例。精度越高，表示模型分类的准确率越高，但可能会遗漏一些正样本。</li></ol><p>这些指标通常用于比较不同模型的的表现，或者评估同一模型在不同数据集上的表现。在实际应用中，需要根据具体的问题和需求来选择适当的的表现指标。</p>]]></content>
+        <content type="html"><![CDATA[<blockquote><p>准确率(precision)<br>在被判定为正样本的数据中，实际为正样本的个数</p></blockquote><blockquote><p>精确率(accuracy)<br>在所有数据中，正负样本判断正确的个数</p></blockquote><blockquote><p>召回率(recall)<br>在实际为正样本的数据中，被判定为正样本的个数</p></blockquote><blockquote><p>F1值<br>F1值是精确率和召回率的调和均值，相当于精确率和召回率的综合评价指标</p></blockquote><blockquote><p>ROC<br>接收者操作特征曲线（receiver operating characteristic curve），是反映敏感性和特异性连续变量的综合指标，ROC曲线上每个点反映着对同一信号刺激的感受性<br>横坐标：伪正类率(False positive rate，FPR，FPR&#x3D;FP&#x2F;(FP+TN))，预测为正但实际为负的样本占所有负例样本的比例；<br>纵坐标：真正类率(True positive rate，TPR，TPR&#x3D;TP&#x2F;(TP+FN))，预测为正且实际为正的样本占所有正例样本的比例(召回率)<br>真正的理想情况: TPR应接近1，FPR接近0，即图中的(0,1)点。ROC曲线越靠拢(0,1)点，越偏离45度对角线越好</p></blockquote><blockquote><p>AUC<br>ROC曲线下的面积，显然这个面积的数值不会大于1。又由于ROC曲线一般都处于y&#x3D;x这条直线的上方，所以AUC的取值范围一般在0.5和1之间。使用AUC值作为评价标准是因为很多时候ROC曲线并不能清晰的说明哪个分类器的效果更好，AUC值越大的分类器, 正确率越高</p></blockquote><blockquote><p>公式表达<br>TP(True Positive)：被判定为正样本，实际为正样本<br>TN(True Negative)：被判定为负样本，实际为负样本<br>FP(False Positive)：被判定为正样本，实际为负样本<br>FN(False Negative)：被判定为负样本，实际为正样本<br>precision &#x3D; TP&#x2F;(TP+FP)<br>recall &#x3D; TP&#x2F;(TP+FN)<br>accuracy &#x3D; (TP+TN)&#x2F;(TP+TN+FP+FN)<br>F1 &#x3D; 2&#x2F;(1&#x2F;P+1&#x2F;R) &#x3D; 2PR&#x2F;(P+R) (P代表精确率，R代表召回率)</p></blockquote>]]></content>
       
       
       <categories>

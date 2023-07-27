@@ -1,0 +1,36 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>机器学习模型评价指标</title><meta name="description" content="数学是上帝用来书写宇宙的文字"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><link rel="stylesheet" href="/style/common/jquery.fancybox.min.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+准确率(precision)在被判定为正样本的数据中，实际为正样本的个数
+
+
+精确率(accuracy)在所有数据中，正负样本判断正确的个数
+
+
+召回率(recall)在实际为正样本的数据中，被判定为正样本的个数
+
+
+F1值F1值是精确率和召回率的调和均值，相当于精确率和召回率的综合评价指标
+
+
+ROC接收者操作特征曲线（receiver operating characteristic curve），是反映敏感性和特异性连续变量的综合指标，ROC曲线上每个点反映着对同一信号刺激的感受性横坐标：伪正类率(False positive rate，FPR，FPR&amp;#x3D;FP&amp;#x2F;(FP+TN))，预测为正但实际为负的样本占所有负例样本的比例；纵坐标：真正类率(True positive rate，T.."><meta name="generator" content="Hexo 6.3.0"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Cygnus Dark's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">机器学习模型评价指标</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">博客</a></h3><h3 class="is-inline-block"><a href="/about">个人简介</a></h3><h3 class="is-inline-block"><a href="/archives">文章</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">博客</a></h3><h3 class="is-inline-block"><a href="/about">个人简介</a></h3><h3 class="is-inline-block"><a href="/archives">文章</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0"><i class="tag post-item-tag">机器学习</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">机器学习模型评价指标</h1><time class="has-text-grey" datetime="2023-07-27T00:00:00.000Z">2023-07-27</time><article class="mt-2 post-content"><blockquote>
+<p>准确率(precision)<br>在被判定为正样本的数据中，实际为正样本的个数</p>
+</blockquote>
+<blockquote>
+<p>精确率(accuracy)<br>在所有数据中，正负样本判断正确的个数</p>
+</blockquote>
+<blockquote>
+<p>召回率(recall)<br>在实际为正样本的数据中，被判定为正样本的个数</p>
+</blockquote>
+<blockquote>
+<p>F1值<br>F1值是精确率和召回率的调和均值，相当于精确率和召回率的综合评价指标</p>
+</blockquote>
+<blockquote>
+<p>ROC<br>接收者操作特征曲线（receiver operating characteristic curve），是反映敏感性和特异性连续变量的综合指标，ROC曲线上每个点反映着对同一信号刺激的感受性<br>横坐标：伪正类率(False positive rate，FPR，FPR&#x3D;FP&#x2F;(FP+TN))，预测为正但实际为负的样本占所有负例样本的比例；<br>纵坐标：真正类率(True positive rate，TPR，TPR&#x3D;TP&#x2F;(TP+FN))，预测为正且实际为正的样本占所有正例样本的比例(召回率)<br>真正的理想情况: TPR应接近1，FPR接近0，即图中的(0,1)点。ROC曲线越靠拢(0,1)点，越偏离45度对角线越好</p>
+</blockquote>
+<blockquote>
+<p>AUC<br>ROC曲线下的面积，显然这个面积的数值不会大于1。又由于ROC曲线一般都处于y&#x3D;x这条直线的上方，所以AUC的取值范围一般在0.5和1之间。使用AUC值作为评价标准是因为很多时候ROC曲线并不能清晰的说明哪个分类器的效果更好，AUC值越大的分类器, 正确率越高</p>
+</blockquote>
+<blockquote>
+<p>公式表达<br>TP(True Positive)：被判定为正样本，实际为正样本<br>TN(True Negative)：被判定为负样本，实际为负样本<br>FP(False Positive)：被判定为正样本，实际为负样本<br>FN(False Negative)：被判定为负样本，实际为正样本<br>precision &#x3D; TP&#x2F;(TP+FP)<br>recall &#x3D; TP&#x2F;(TP+FN)<br>accuracy &#x3D; (TP+TN)&#x2F;(TP+TN+FP+FN)<br>F1 &#x3D; 2&#x2F;(1&#x2F;P+1&#x2F;R) &#x3D; 2PR&#x2F;(P+R) (P代表精确率，R代表召回率)</p>
+</blockquote>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><em></em><a class="button is-default" href="/2023/07/01/Flink%20Checkpoint%E6%9C%BA%E5%88%B6/" title="Flink Checkpoint机制"><span class="has-text-weight-semibold">下一页: Flink Checkpoint机制</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="cygnusdark/cygnusdark" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/cygnusdark"><i class="iconfont icon-github"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Cygnus Dark 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by CygnusDark &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/cygnusdark">Theme by CygnusGarden&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/cygnusdark/cygnusgarden" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/jquery-3.6.1.min.js"></script><script src="/js/jquery-fancybox.min.js"></script><script src="/js/img_zoom.js"></script><script src="/js/post.js"></script></body></html>
