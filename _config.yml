@@ -8,7 +8,8 @@ subtitle: ''
 description: ''
 keywords:
 author: Cygnus Dark
-language: zh-CN
+language: en
+# zh-CN
 timezone: ''
 
 # URL
@@ -97,7 +98,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: hexo-theme-Claudia
+theme: cactus
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
