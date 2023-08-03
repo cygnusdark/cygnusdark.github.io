@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 定义当进行聚合运算时（GroupBy&#x2F;KeyBy + Agg），如果聚合所使用的key存在热点，则会导致数据倾斜。如统计某日各个省份的车流量，则负责运算北京、上海等一线城市的count subtask节点则会成为热点，处理数据的压力会比较大。 2. 危害2.1 任务卡死keyBy 或 rebalance 下游的算子，如果单个 subtask 存在热点并完全卡死，会把整个 Flink">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink 数据倾斜优化">
+<meta property="og:url" content="https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="Cygnus Garden">
+<meta property="og:description" content="1. 定义当进行聚合运算时（GroupBy&#x2F;KeyBy + Agg），如果聚合所使用的key存在热点，则会导致数据倾斜。如统计某日各个省份的车流量，则负责运算北京、上海等一线城市的count subtask节点则会成为热点，处理数据的压力会比较大。 2. 危害2.1 任务卡死keyBy 或 rebalance 下游的算子，如果单个 subtask 存在热点并完全卡死，会把整个 Flink">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-12-01T00:00:00.000Z">
+<meta property="article:modified_time" content="2023-08-03T13:15:06.269Z">
+<meta property="article:author" content="Cygnus Dark">
+<meta property="article:tag" content="Flink">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon.ico" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon.ico">
+        
+      
+    
+    <!-- title -->
+    <title>Flink 数据倾斜优化</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/cygnusdark">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2022/12/01/Flink%20%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/11/01/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&text=Flink 数据倾斜优化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&is_video=false&description=Flink 数据倾斜优化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flink 数据倾斜优化&body=Check out this article: https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&name=Flink 数据倾斜优化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&t=Flink 数据倾斜优化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">1. 定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%8D%B1%E5%AE%B3"><span class="toc-number">2.</span> <span class="toc-text">2. 危害</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E4%BB%BB%E5%8A%A1%E5%8D%A1%E6%AD%BB"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 任务卡死</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Checkpoint%E6%97%B6%E9%97%B4%E5%8F%98%E9%95%BF"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Checkpoint时间变长</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-State%E5%8F%98%E5%A4%A7"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 State变大</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">3. 解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%BF%AE%E6%94%B9%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 修改分区策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E7%9B%AE%E6%A0%87"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E6%89%8B%E6%AE%B5"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2 手段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E4%B8%A4%E9%98%B6%E6%AE%B5%E8%81%9A%E5%90%88"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 两阶段聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-%E7%9B%AE%E6%A0%87"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1 目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-%E6%89%8B%E6%AE%B5"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2 手段</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-1-%E4%BF%AE%E6%94%B9sql"><span class="toc-number">3.2.2.1.</span> <span class="toc-text">3.2.2.1 修改sql</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-2-Local-Global"><span class="toc-number">3.2.2.2.</span> <span class="toc-text">3.2.2.2 Local-Global</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-3-Partial-Final"><span class="toc-number">3.2.2.3.</span> <span class="toc-text">3.2.2.3 Partial-Final</span></a></li></ol></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Flink 数据倾斜优化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Cygnus Dark</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-12-01T00:00:00.000Z" class="dt-published" itemprop="datePublished">2022-12-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Flink/" rel="tag">Flink</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h1><p>当进行聚合运算时（GroupBy&#x2F;KeyBy + Agg），如果聚合所使用的key存在热点，则会导致数据倾斜。如统计某日各个省份的车流量，则负责运算北京、上海等一线城市的count subtask节点则会成为热点，处理数据的压力会比较大。</p>
+<h1 id="2-危害"><a href="#2-危害" class="headerlink" title="2. 危害"></a>2. 危害</h1><h2 id="2-1-任务卡死"><a href="#2-1-任务卡死" class="headerlink" title="2.1 任务卡死"></a>2.1 任务卡死</h2><p>keyBy 或 rebalance 下游的算子，如果单个 subtask 存在热点并完全卡死，会把整个 Flink 任务卡死。看如下示例：<br>如下图所示，上游每个 Subtask 中会有 3 个 resultSubPartition，连接下游算子的 3 个 subtask。下游每个 subtask 会有 2 个 InputChannel，连接上游算子的 2 个 subtask。Local BufferPool为subtask中的ResultSubpartition&#x2F;InputChannel所共用，在正常运行过程中如果没有反压，所有的 buffer pool 是用不完的。</p>
+<p>一旦subtask B0变成热点，则会引起反压，依次产生如下问题：</p>
+<ol>
+<li>Subtask B0 内的 A0 和 A1 两个 InputChannel 会被占满；Subtask B0 公共的 BufferPool 中可申请到的空间也被占满</li>
+<li>Subtask A0 和 A1 的 B0 ResultSubPartition 被占满；Subtask A0 和 A1 公共的 BufferPool 中可申请到的空间也被占满</li>
+<li>如图2所示，Subtask A0 的主线程会从上游读取数据消费，按照数据的 KeyBy 规则，将数据发送到 B0、B1、B2 三个 ResultSubpartition 中；可以看到，如果 B0 这个ResultSubpartition占满了，且 B0 在公共的 Local BufferPool 中可申请到的空间也被占满。现在有一条数据被keyby后发往B0，但是现在 B0 这个ResultSubpartition 没有空间了，所以主线程就会卡在申请 buffer 上，直到可以再申请到 buffer</li>
+</ol>
+<p>Subtask A0 的主线程被卡住，则不会往下游的任何subtask发送数据了，如图1所示，下游的Subtask B1和Subtask B2不再接收新数据。整个任务处于瘫痪状态</p>
+<h2 id="2-2-Checkpoint时间变长"><a href="#2-2-Checkpoint时间变长" class="headerlink" title="2.2 Checkpoint时间变长"></a>2.2 Checkpoint时间变长</h2><p>checkpoint barrier也是一种特殊的数据，如果整个任务中各个可用buffer变少，则checkpoint barrier的传输也会因为找不到可用buffer而降低速度；由于checkpoint barrier的对齐机制，会造成当前checkpoint的barrier迟迟无法对齐，进而超时。</p>
+<h2 id="2-3-State变大"><a href="#2-3-State变大" class="headerlink" title="2.3 State变大"></a>2.3 State变大</h2><p>对于有两个以上输入管道的 Operator，存在checkpoint barrier对齐机制，接受到较快的输入管道的 barrier 后，它后面数据会被缓存起来但不处理，直到较慢的输入管道的 barrier 也到达，这些被缓存的数据会被放到state 里面，导致 checkpoint 变大。</p>
+<h1 id="3-解决办法"><a href="#3-解决办法" class="headerlink" title="3. 解决办法"></a>3. 解决办法</h1><h2 id="3-1-修改分区策略"><a href="#3-1-修改分区策略" class="headerlink" title="3.1 修改分区策略"></a>3.1 修改分区策略</h2><h3 id="3-1-1-目标"><a href="#3-1-1-目标" class="headerlink" title="3.1.1 目标"></a>3.1.1 目标</h3><p>让不需要shuffle的两个算子间进行shuffle，打乱数据，从而避免数据倾斜</p>
+<h3 id="3-1-2-手段"><a href="#3-1-2-手段" class="headerlink" title="3.1.2 手段"></a>3.1.2 手段</h3><p>在Flink任务提交后，经常可以看到web ui中的一些算子之间采用的分区策略是forward，在该分区策略下很可能会存在数据倾斜现象。如以下情况：<br>某kafka topic统计每个省份的车次，针对每个省份都有一个partition，共计36个partition，同时设有36个source算子，36个flatmap算子。由于source和flatmap满足one-to-one关系，且并行度相同，则Flink默认会采用forward这个分区策略来关联source和flatmap这两个算子。<br>Flink默认设置forward分区策略有两个条件：</p>
+<ol>
+<li>两个算子满足one-to-one关系</li>
+<li>两个算子并行度相同</li>
+</ol>
+<p>此时，北京和上海对应的flatmap算子必然会出现热点数据，由于source到flatmap算子之间并不需要有特定的对应关系，因此可以采用不同的分区策略来将数据打乱，让不同省份的车流数据落到所有的flatmap算子，消除数据倾斜。</p>
+<p>因此，我们只需要破坏forward分区策略的条件即可</p>
+<ol>
+<li>修改两个算子的并行度</li>
+<li>强行设定分区策略：<code>dataStream.rebalance();</code></li>
+</ol>
+<h2 id="3-2-两阶段聚合"><a href="#3-2-两阶段聚合" class="headerlink" title="3.2 两阶段聚合"></a>3.2 两阶段聚合</h2><p>所谓两阶段聚合，即在需要shuffle的两个算子之间，再加一层算子</p>
+<h3 id="3-2-1-目标"><a href="#3-2-1-目标" class="headerlink" title="3.2.1 目标"></a>3.2.1 目标</h3><p>先进行一次聚合，减小算子2和算子3之间的数据量，减轻算子2和算子3之间的热点问题<br>新增新的shuffle，打散算子1和算子2之间的数据，减轻算子1和算子2之间的热点问题</p>
+<h3 id="3-2-2-手段"><a href="#3-2-2-手段" class="headerlink" title="3.2.2 手段"></a>3.2.2 手段</h3><p>我们以sql的优化作为范例进行讲解，这样更加直观和简洁。DataStream API无非就是仿照sql的group by + agg模式，增加一层keyby + agg。</p>
+<h4 id="3-2-2-1-修改sql"><a href="#3-2-2-1-修改sql" class="headerlink" title="3.2.2.1 修改sql"></a>3.2.2.1 修改sql</h4><p>有如下需求，按天统计每个类目的成交额</p>
+<pre><code class="sql">SELECT 
+    date_format(ctime, &#39;%Y%m%d&#39;) as cdate, -- 将数据从时间戳格式（2018-12-04 15:44:54），转换为date格式(20181204)
+       category_id,
+    sum(price) as category_gmv
+FROM src
+GROUP BY date_format(ctime, &#39;%Y%m%d&#39;), category_id; --按照天做聚合
+</code></pre>
+<p>以这个SQL为例，其数据流程图如下，一个小方块表示一条成交记录，不同颜色代表不同的category_id<br>Group By + Agg 模式中，SQL作业性能与数据分布非常相关，如果数据中存在数据倾斜，也就是某个key的数据异常的多，那么某个聚合节点就会成为瓶颈，作业就会有明显的反压及延时现象。<br>用两阶段聚合方法优化后的SQL如下：</p>
+<pre><code class="sql">SELECT cdate,category_id,sum(category_gmv_p) as category_gmv
+FROM(
+    SELECT 
+        date_format(ctime, &#39;%Y%m%d&#39;) as cdate, -- 将数据从时间戳格式（2018-12-04 15:44:54），转换为date格式(20181204)
+           category_id,
+        sum(price) as category_gmv_p
+    FROM src
+    GROUP BY category_id, mod(hash_code(FLOOR(RAND(1)*1000), 256),date_format(ctime, &#39;%Y%m%d&#39;); --按照天做聚合
+)
+GROUP BY cdate,category_id
+</code></pre>
+<p>SQL中做了将一个Group By+Agg拆称了两个，子查询里按照category_id和mod(hash_code(FLOOR(RAND(1)*1000), 256)分组，将同一个category_id上的数据打散成了256份，先做一层聚合。外层Group By+Agg，将子查询聚合后的结果再次做聚合。这样通过两层聚合的方式，即可大大缓解某聚合节点拥堵的现象。其数据流程图如下：<br>这种方法达到了两个优化目标，在日期的基础上再将数据分成256份，打散数据，减轻算子1和算子2之间的热点问题；在算子2进行了初步的sum聚合，减小了到达算子3的数据量，减轻了算子2和算子3之间的热点问题。 该方法通过取余的方式将数据进一步打散，另有给key添加随机数的方式进行打散</p>
+<h4 id="3-2-2-2-Local-Global"><a href="#3-2-2-2-Local-Global" class="headerlink" title="3.2.2.2 Local-Global"></a>3.2.2.2 Local-Global</h4><p>LocalGlobal和PartialFinal其实都属于两阶段聚合，只不过封装了拆解逻辑，我们只需要对Flink SQL任务做简单的配置即可。</p>
+<p>LocalGlobal优化可以用来解决聚合时的数据倾斜问题。其核心思想是，将聚合分为两个阶段执行，先在上游进行局部(本地&#x2F;Local)聚合，再在下游进行全局(Global)聚合，类似MapReduce的Combine + Reduce，即先进行一个本地Reduce，再进行全局Reduce。该方法，只完成了先进行一次聚合，减少数据量这个目标<br>以如下场景为例</p>
+<pre><code class="sql">SELECT color, sum(id)
+FROM T
+GROUP BY color
+</code></pre>
+<p>开启LocalGlobal：</p>
+<pre><code class="java">TableEnvironment tEnv = ...
+Configuration configuration = tEnv.getConfig().getConfiguration();
+
+// 要使用LocalGlobal优化，需要先开启MiniBatch 
+configuration.setString(&quot;table.exec.mini-batch.enabled&quot;, &quot;true&quot;); 
+configuration.setString(&quot;table.exec.mini-batch.allow-latency&quot;, &quot;5 s&quot;);
+configuration.setString(&quot;table.exec.mini-batch.size&quot;, &quot;5000&quot;);
+
+// 开启LocalGlobal
+configuration.setString(&quot;table.optimizer.agg-phase-strategy&quot;, &quot;TWO_PHASE&quot;);
+</code></pre>
+<h4 id="3-2-2-3-Partial-Final"><a href="#3-2-2-3-Partial-Final" class="headerlink" title="3.2.2.3 Partial-Final"></a>3.2.2.3 Partial-Final</h4><p>LocalGlobal优化针对普通聚合（例如SUM、COUNT、MAX、MIN和AVG）有较好的效果，对于COUNT DISTINCT收效不明显，因为COUNT DISTINCT在Local聚合时，对于DISTINCT KEY的去重率不高，导致在Global节点仍然存在热点<br>如下场景，统计一天的UV</p>
+<pre><code class="sql">SELECT day, COUNT(DISTINCT user_id)
+FROM T
+GROUP BY day
+</code></pre>
+<p>如果user_id比较稀疏，即便开启了LocalGlobal优化，收效也并不明显，因为COUNT DISTINCT在Local阶段时，去重率并不高，这就导致在Global阶段仍然存在热点问题。不满足第一条目标和第二条目标。<br>为了解决这一问题，需要将原始聚合拆分成两层聚合:</p>
+<pre><code class="sql">SELECT day, SUM(cnt)
+FROM (
+    SELECT day, COUNT(DISTINCT user_id) as cnt
+    FROM T
+    GROUP BY day, MOD(HASH_CODE(user_id), 1024)
+)
+GROUP BY day
+</code></pre>
+<p>现在Blink Planner提供了PartialFinal功能，无需自己拆解sql，只要简单的配置即可，配置如下：</p>
+<pre><code class="java">TableEnvironment tEnv = ...
+Configuration configuration = tEnv.getConfig().getConfiguration();
+
+// 开启MiniBatch 
+configuration.setString(&quot;table.exec.mini-batch.enabled&quot;, &quot;true&quot;); 
+configuration.setString(&quot;table.exec.mini-batch.allow-latency&quot;, &quot;5 s&quot;);
+configuration.setString(&quot;table.exec.mini-batch.size&quot;, &quot;5000&quot;);
+
+// 开启LocalGlobal
+configuration.setString(&quot;table.optimizer.agg-phase-strategy&quot;, &quot;TWO_PHASE&quot;);
+
+// 开启Split Distinct
+configuration.setString(&quot;table.optimizer.distinct-agg.split.enabled&quot;, &quot;true&quot;);
+</code></pre>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/cygnusdark">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">1. 定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E5%8D%B1%E5%AE%B3"><span class="toc-number">2.</span> <span class="toc-text">2. 危害</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E4%BB%BB%E5%8A%A1%E5%8D%A1%E6%AD%BB"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 任务卡死</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Checkpoint%E6%97%B6%E9%97%B4%E5%8F%98%E9%95%BF"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 Checkpoint时间变长</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-State%E5%8F%98%E5%A4%A7"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 State变大</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">3. 解决办法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%BF%AE%E6%94%B9%E5%88%86%E5%8C%BA%E7%AD%96%E7%95%A5"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 修改分区策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-1-%E7%9B%AE%E6%A0%87"><span class="toc-number">3.1.1.</span> <span class="toc-text">3.1.1 目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-2-%E6%89%8B%E6%AE%B5"><span class="toc-number">3.1.2.</span> <span class="toc-text">3.1.2 手段</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E4%B8%A4%E9%98%B6%E6%AE%B5%E8%81%9A%E5%90%88"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 两阶段聚合</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-1-%E7%9B%AE%E6%A0%87"><span class="toc-number">3.2.1.</span> <span class="toc-text">3.2.1 目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-2-%E6%89%8B%E6%AE%B5"><span class="toc-number">3.2.2.</span> <span class="toc-text">3.2.2 手段</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-1-%E4%BF%AE%E6%94%B9sql"><span class="toc-number">3.2.2.1.</span> <span class="toc-text">3.2.2.1 修改sql</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-2-Local-Global"><span class="toc-number">3.2.2.2.</span> <span class="toc-text">3.2.2.2 Local-Global</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-2-2-3-Partial-Final"><span class="toc-number">3.2.2.3.</span> <span class="toc-text">3.2.2.3 Partial-Final</span></a></li></ol></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&text=Flink 数据倾斜优化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&is_video=false&description=Flink 数据倾斜优化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flink 数据倾斜优化&body=Check out this article: https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&title=Flink 数据倾斜优化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&name=Flink 数据倾斜优化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2022/12/01/Flink%20%E6%95%B0%E6%8D%AE%E5%80%BE%E6%96%9C%E4%BC%98%E5%8C%96/&t=Flink 数据倾斜优化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Cygnus Dark
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/cygnusdark">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
