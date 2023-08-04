@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="如何调整技术方向如何平衡技术开发和业务交付精力？ 技术规划应该包括哪些内容？    如何做一个业务上能落地而且会落地，而不是高高在上的技术规划    技术预研的舍与得如何去平衡（效率&amp;成本&amp;其他等等），开源以及自研技术，有哪些倾向性选择？    技术规划如何更能接地气，可持续？    技术规划有没有好的方法论或者最佳实践？    如何推动技术规划真正落地，实现价值    技术规">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术规划50问">
+<meta property="og:url" content="https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/index.html">
+<meta property="og:site_name" content="Cygnus Garden">
+<meta property="og:description" content="如何调整技术方向如何平衡技术开发和业务交付精力？ 技术规划应该包括哪些内容？    如何做一个业务上能落地而且会落地，而不是高高在上的技术规划    技术预研的舍与得如何去平衡（效率&amp;成本&amp;其他等等），开源以及自研技术，有哪些倾向性选择？    技术规划如何更能接地气，可持续？    技术规划有没有好的方法论或者最佳实践？    如何推动技术规划真正落地，实现价值    技术规">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cygnusdark.github.io/images/tag-bg.jpg">
+<meta property="article:published_time" content="2023-06-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-08-04T03:13:08.479Z">
+<meta property="article:author" content="Cygnus Dark">
+<meta property="article:tag" content="技术分享">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cygnusdark.github.io/images/tag-bg.jpg">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.ico" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>技术规划50问</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/06/30/Flink%20Checkpoint%E6%9C%BA%E5%88%B6/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/12/31/%E7%99%BE%E5%BA%A6%E5%B7%A5%E7%A8%8B%E5%B8%88%E8%81%8C%E7%A7%B0%E6%A0%87%E5%87%86/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&text=技术规划50问"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&is_video=false&description=技术规划50问"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=技术规划50问&body=Check out this article: https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&name=技术规划50问&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&t=技术规划50问"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        技术规划50问
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Cygnus Dark</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-06-30T16:00:00.000Z" class="dt-published" itemprop="datePublished">2023-07-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/">技术分享</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag">技术分享</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><img src="/images/tag-bg.jpg" alt="img"></p>
+<ol>
+<li>如何调整技术方向如何平衡技术开发和业务交付精力？</li>
+<li>技术规划应该包括哪些内容？</li>
+<li>   如何做一个业务上能落地而且会落地，而不是高高在上的技术规划</li>
+<li>   技术预研的舍与得如何去平衡（效率&amp;成本&amp;其他等等），开源以及自研技术，有哪些倾向性选择？</li>
+<li>   技术规划如何更能接地气，可持续？</li>
+<li>   技术规划有没有好的方法论或者最佳实践？</li>
+<li>   如何推动技术规划真正落地，实现价值</li>
+<li>   技术规划的出发点是什么？与产品规划如何同步？</li>
+<li>如何合理的制定短期规划和长期规划？</li>
+<li>技术规划如何能做到业界领先，如何能让高层信服，如何能保证高质量落地？</li>
+<li>技术规划有什么机制保障尽可能的落地？</li>
+<li>如何结合业界趋势，做出贴合业务带来收益的实际产品？这中间有没有什么方法论？</li>
+<li>如何看到领域内远期的（3-5）年的技术&#x2F;产品趋势，如何评估是否靠谱&#x2F;能否落地&#x2F;能否产生收益？</li>
+<li>如何让技术规划获得更广泛的支持认可；没有业务，即需要自己拓展业务时，如何做技术规划</li>
+<li>一个优秀技术规划的产出流程一般是什么样子的</li>
+<li>在技术规划中遇到自己不擅长的领域如何规划处理</li>
+<li>如何避免过度设计；如何权衡长短期规划</li>
+<li>越实际的问题就有越明确的技术方案，而技术规划要面临下一个周期提前布局，其中的潜在逻辑是什么。</li>
+<li>技术规划的落地执行往往由于实际需求&#x2F;方向变化会产生变形，如何快速调整，说明意义。</li>
+<li>技术的先进性和成熟度怎么平衡？</li>
+<li>方法论上的东西都知道，但是真正做技术规划的时候，一些长期有价值的技术方向还是很难想出来，这个时候如何办？</li>
+<li>技术规划中，如何加强跨BUBG的协同合作</li>
+<li>技术规划中技术驱动的项目如何与业务发展与指标相匹配，落地节奏怎么安排</li>
+<li>技术方向调整，技术与管理如何选择</li>
+<li>业务成长出现困境，如何更好的突破困境，逆境中发现机会点</li>
+<li>学海无涯，技术精进的道路没有止境，如何平衡工作学习和生活？</li>
+<li>如何兼具技术架构与技术细节把我能力，同时具备产品化的思维方式？</li>
+<li>如何让自己的技术架构能力 cover bg 级别或者一个中小厂的技术团队（目标）</li>
+<li>面临层出不穷的一线新技术问题，关于架构师在保持技术敏感度方面该如何做？</li>
+<li>如何在有限的资源下，增强团队凝聚力和战斗力？</li>
+<li>小组各个同学技术方向不同，如何对其产出进行横向评比？</li>
+<li>如何在日常繁杂的业务中脱身而出，拓展出具有影响力的技术？</li>
+<li>最为技术人员一般都在讲”T”字型发展模式，如何选定一个有价值高回报的方向去深入了解</li>
+<li>技术日行千里，如何保持个人进步的节奏</li>
+<li>以架构师为个人成长目标，如何系统性的制订个人学习计划？平时需关注哪些提升的途径？</li>
+<li>架构师和具体实现间怎么平衡？架构师是否必须要承担部分PM的职责？</li>
+<li>偏后端的基础工程架构，如何能更主动的帮助到业务的发展，以及在业务sense上如何得到成长？</li>
+<li>停留在T7&#x2F;T8级别，难于跨越的这条洪沟是什么？如何跨过呢？</li>
+<li>如何拓宽知识的广度，如果没有实战经验，纯看书看论文理解应该不够深刻</li>
+<li>技术规划的目标定义了，但是找路径的时候不知道怎么做？</li>
+<li>如何设计一个高可用高可扩展的架构？如何能够控制系统复杂度？</li>
+<li>如何结合现有业务做长期三年规划架构师如何在人力紧张或者没有人力的时候快速落地技术规划</li>
+<li>架构师是一个技术岗位，我一直是技术驱动在做人做事。但与其说架构师是在管理技术，不如说是在管理人。管理团队的人与管理团队中的技术，我想明确这是不是两种不同的管理风格，应该如何侧重？</li>
+<li>技术迭代速度快，架构师的视野是否会限制团队的技术演进；是需要架构师时刻紧跟各领域技术趋势，还是可以有机制保证业务技术先进性</li>
+<li>工作中涉及到的业务功能较多时，作为架构师该如何找到技术能力与业务能力之间的平衡点</li>
+<li>如何在涉及到广度的时候，保持敏锐的技术判断力如何能更快速有效的提升自己，抓大放小，以便于进一步优化工作效率。想听听过来人的经验</li>
+<li>T9需要什么标准</li>
+<li>技术规划的长短期价值怎么权衡，比如在人力时间资源上的分配？</li>
+<li>项目复盘怎么做才能更好的帮助技术规划调整？</li>
+<li>作为一个技术leader，如何帮助团队去判断产品方向？</li>
+</ol>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&text=技术规划50问"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&is_video=false&description=技术规划50问"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=技术规划50问&body=Check out this article: https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&title=技术规划50问"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&name=技术规划50问&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%92/&t=技术规划50问"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Cygnus Dark
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>

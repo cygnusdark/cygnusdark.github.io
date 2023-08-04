@@ -620,8 +620,6 @@ body {
   border-radius: 5px;
   background-size: 50px 50px;
   background-repeat: no-repeat;
-  filter: grayscale(100%);
-  -webkit-filter: grayscale(100%);
 }
 #header #nav {
   color: #2bbc8a;
@@ -662,10 +660,6 @@ body {
 }
 #header #nav ul li:last-child a {
   margin-right: 0;
-}
-#header:hover #logo {
-  filter: none;
-  -webkit-filter: none;
 }
 @media screen and (max-width: 480px) {
   #header #title {
@@ -1517,51 +1511,68 @@ article .content .caption {
   content: ")";
 }
 .highlight {
-  color: #a39e9b;
-  background: #2f1e2e;
-}
-.highlight .code .comment,
-.highlight .code .quote {
-  color: #8d8687;
-}
-.highlight .code .variable,
-.highlight .code .template-variable,
-.highlight .code .tag,
-.highlight .code .name,
-.highlight .code .selector-id,
-.highlight .code .selector-class,
-.highlight .code .regexp,
-.highlight .code .link,
-.highlight .code .meta {
-  color: #ef6155;
-}
-.highlight .code .number,
-.highlight .code .built_in,
-.highlight .code .builtin-name,
-.highlight .code .literal,
-.highlight .code .type,
-.highlight .code .params,
-.highlight .code .deletion {
-  color: #f99b15;
-}
-.highlight .code .title,
-.highlight .code .section,
-.highlight .code .attribute {
-  color: #fec418;
-}
-.highlight .code .string,
-.highlight .code .symbol,
-.highlight .code .bullet,
-.highlight .code .addition {
-  color: #48b685;
+  background: #282b2e;
+  color: #e0e2e4;
 }
 .highlight .code .keyword,
-.highlight .code .selector-tag {
-  color: #815ba4;
+.highlight .code .selector-tag,
+.highlight .code .literal,
+.highlight .code .selector-id {
+  color: #93c763;
 }
-.highlight .code .emphasis {
-  font-style: italic;
+.highlight .code .number {
+  color: #ffcd22;
 }
+.highlight .code .attribute {
+  color: #668bb0;
+}
+.highlight .code .code,
+.highlight .code .class .title,
+.highlight .code .section {
+  color: #fff;
+}
+.highlight .code .regexp,
+.highlight .code .link {
+  color: #d39745;
+}
+.highlight .code .meta {
+  color: #557182;
+}
+.highlight .code .tag,
+.highlight .code .name,
+.highlight .code .bullet,
+.highlight .code .subst,
+.highlight .code .emphasis,
+.highlight .code .type,
+.highlight .code .built_in,
+.highlight .code .selector-attr,
+.highlight .code .selector-pseudo,
+.highlight .code .addition,
+.highlight .code .variable,
+.highlight .code .template-tag,
+.highlight .code .template-variable {
+  color: #8cbbad;
+}
+.highlight .code .string,
+.highlight .code .symbol {
+  color: #ec7600;
+}
+.highlight .code .comment,
+.highlight .code .quote,
+.highlight .code .deletion {
+  color: #818e96;
+}
+.highlight .code .selector-class {
+  color: #a082bd;
+}
+.highlight .code .keyword,
+.highlight .code .selector-tag,
+.highlight .code .literal,
+.highlight .code .doctag,
+.highlight .code .title,
+.highlight .code .section,
+.highlight .code .type,
+.highlight .code .name,
 .highlight .code .strong {
   font-weight: bold;
 }
