@@ -4,13 +4,13 @@
 
 # Site
 title: Cygnus Garden
-subtitle: ''
-description: ''
+subtitle: '希纳斯の庭院'
+description: 'HELLO WORLD!🌵'
 keywords:
 author: Cygnus Dark
 language: en
 # zh-CN en
-timezone: ''
+timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
@@ -45,7 +45,7 @@ post_asset_folder: false
 relative_link: false
 future: true
 highlight:
-  enable: false
+  enable: true
   line_number: true
   auto_detect: false
   tab_replace: ''
@@ -103,4 +103,5 @@ theme: cactus
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+

@@ -95,7 +95,7 @@ logo:
   height: 50
   url: /images/logo.png
   gravatar: false
-  grayout: true
+  grayout: false
 
 # Customize the favicons.
 # Cactus supports a limited set of the three most important icons:
@@ -111,7 +111,7 @@ favicon:
     url: /images/favicon.ico
     gravatar: false
   android:
-    url: /images/apple-touch-icon.png
+    url: /images/favicon-192x192.ico
     gravatar: false
   apple:
     url: /images/apple-touch-icon.png
@@ -119,8 +119,8 @@ favicon:
 
 # The color scheme that should be used to highlight codeblocks.
 # See source/css/_highlight for a list of all available color schemes.
-#highlight: rainbow
-highlight: paraiso-dark
+highlight: obsidian
+
 # Set the color scheme.
 # Available color schemes are 'dark', 'light', 'classic' and 'white'.
 # Alternatively, add your own custom color scheme to source/css/_colors.
