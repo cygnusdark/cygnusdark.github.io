@@ -1,6 +1,7 @@
 ---
 title: Flink 保证数据一致性
 date: 2022-12-01
+categories: 大数据
 tags:
   - Flink
 ---

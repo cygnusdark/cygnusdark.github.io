@@ -17,7 +17,7 @@ nav:
   home: /
   about: /about/
   articles: /archives/
-#  projects: http://github.com/cygnusdark
+  category: /categories/
   search: /search/
 
 # Links to your social media accounts.

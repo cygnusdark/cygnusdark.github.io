@@ -5,7 +5,8 @@
 # Site
 title: Cygnus Garden
 subtitle: '希纳斯の庭院'
-description: 'HELLO WORLD!🌵'
+description: 'Welcome to Cygnus Garden (My Personal Blog 😊), I’m Cygnus Dark (*￣︶￣).
+I love read 📚and My dream is to write the most fun program in the world. 💻'
 keywords:
 author: Cygnus Dark
 language: en
@@ -104,4 +105,5 @@ theme: cactus
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-
+  repo: https://github.com/cygnusdark/cygnusdark.github.io
+  branch: master
