@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言：什么是 Fine-tuning在机器学习中，微调是一种迁移学习方法，其中将预训练模型的权重训练到新数据上。微调可以在神经网络的一部分层上进行，也可以在整个网络上进行。在第一种情况下，未进行微调的层被 &gt; “冻结”，在反向传播步骤中不会更新。 对于某些结构，如卷积神经网络，通常会保持较早的层冻结，因为它们已经被证明可以捕捉较低级别的特征，而与此不同的是，后面的层通常关注与模型训练任务更">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大语言模型精调范式">
+<meta property="og:url" content="https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/index.html">
+<meta property="og:site_name" content="Cygnus Garden">
+<meta property="og:description" content="前言：什么是 Fine-tuning在机器学习中，微调是一种迁移学习方法，其中将预训练模型的权重训练到新数据上。微调可以在神经网络的一部分层上进行，也可以在整个网络上进行。在第一种情况下，未进行微调的层被 &gt; “冻结”，在反向传播步骤中不会更新。 对于某些结构，如卷积神经网络，通常会保持较早的层冻结，因为它们已经被证明可以捕捉较低级别的特征，而与此不同的是，后面的层通常关注与模型训练任务更">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-1.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-2.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-3.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-4.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-5.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-6.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-7.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-8.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-9.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-10.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-11.png">
+<meta property="og:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-12.png">
+<meta property="article:published_time" content="2023-08-09T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-08-09T15:03:12.790Z">
+<meta property="article:author" content="Cygnus Dark">
+<meta property="article:tag" content="LLM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cygnusdark.github.io/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-1.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.ico" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>大语言模型精调范式</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8BSFT%E6%95%88%E6%9E%9C%E9%AA%8C%E8%AF%81/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2023/08/08/LoRA%EF%BC%9A%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BD%8E%E9%98%B6%E8%87%AA%E9%80%82%E5%BA%94%E6%96%B9%E6%B3%95/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&text=大语言模型精调范式"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&is_video=false&description=大语言模型精调范式"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=大语言模型精调范式&body=Check out this article: https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&name=大语言模型精调范式&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&t=大语言模型精调范式"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Pre-train-Fine-tuning"><span class="toc-number">1.</span> <span class="toc-text">1. Pre-train + Fine-tuning</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%B2%BE%E8%B0%83"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么要精调</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E7%B2%BE%E8%B0%83"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 如何进行精调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-%E7%B2%BE%E8%B0%83%E6%89%80%E6%9C%89%E5%B1%82"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 精调所有层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">加载预训练模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">定义新的分类头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%86%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%A8%A1%E5%9E%8B%E4%B8%AD"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">将新的分类头添加到模型中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%B2%BE%E8%B0%83%E6%89%80%E6%9C%89%E5%B1%82%E6%9D%A5%E9%80%82%E5%BA%94%E6%96%B0%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">通过精调所有层来适应新任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2-%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 精调顶层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-1"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">加载预训练模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E6%A8%A1%E5%9E%8B%E5%BA%95%E5%B1%82%EF%BC%8C%E5%8F%AA%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">固定模型底层，只精调顶层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4-1"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">定义新的分类头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%86%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%A8%A1%E5%9E%8B%E4%B8%AD-1"><span class="toc-number">1.2.2.4.</span> <span class="toc-text">将新的分类头添加到模型中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82%E6%9D%A5%E9%80%82%E5%BA%94%E6%96%B0%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.2.5.</span> <span class="toc-text">通过精调顶层来适应新任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-3-%E5%86%BB%E7%BB%93%E5%BA%95%E5%B1%82"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3 冻结底层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%88%86%E8%AF%8D%E5%99%A8"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">加载预训练模型和分词器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">构造数据集和数据加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E4%BC%98%E5%8C%96%E5%99%A8%E5%92%8C%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">构造优化器和损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%BB%E7%BB%93%E5%BA%95%E5%B1%82"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">冻结底层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B2%BE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.5.</span> <span class="toc-text">精调模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%B2%BE%E8%B0%83%E5%90%8E%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.6.</span> <span class="toc-text">保存精调后的模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-4-%E9%80%90%E5%B1%82%E7%B2%BE%E8%B0%83"><span class="toc-number">1.2.3.7.</span> <span class="toc-text">1.2.4 逐层精调</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%88%86%E8%AF%8D%E5%99%A8-1"><span class="toc-number">1.2.3.8.</span> <span class="toc-text">加载预训练模型和分词器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%99%A8-1"><span class="toc-number">1.2.3.9.</span> <span class="toc-text">构造数据集和数据加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E4%BC%98%E5%8C%96%E5%99%A8%E5%92%8C%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0-1"><span class="toc-number">1.2.3.10.</span> <span class="toc-text">构造优化器和损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E7%B2%BE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.11.</span> <span class="toc-text">迁移学习精调模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%B2%BE%E8%B0%83%E5%90%8E%E7%9A%84%E6%A8%A1%E5%9E%8B-1"><span class="toc-number">1.2.3.12.</span> <span class="toc-text">保存精调后的模型</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Lightweight-finetuning-%E6%8A%80%E6%9C%AF"><span class="toc-number">2.</span> <span class="toc-text">2. Lightweight-finetuning 技术</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Adapters-tune"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Adapters-tune</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Pre-train-Prompt-tuning-Predict"><span class="toc-number">3.</span> <span class="toc-text">3. Pre-train + Prompt-tuning + Predict</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%BB%80%E4%B9%88%E6%98%AF-Prompt-Tuning"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 什么是 Prompt-Tuning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Prompt-Tuning-%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%BF%87%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Prompt-Tuning 的基本过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-Prompt-Tuning-%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 Prompt-Tuning 的本质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-1-%E4%B8%80%E7%A7%8D%E5%AF%B9%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E4%B8%80%E7%A7%8D%E4%BF%A1%E6%81%AF%E5%A2%9E%E5%BC%BA"><span class="toc-number">3.3.1.</span> <span class="toc-text">3.3.1 一种对任务的指令，可以作为一种信息增强</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-%E4%B8%80%E7%A7%8D%E5%AF%B9%E9%A2%84%E8%AE%AD%E7%BB%83%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%A4%8D%E7%94%A8%EF%BC%8C%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E-Prompt-%E7%9A%84%E7%BB%9F%E4%B8%80%E8%8C%83%E5%BC%8F"><span class="toc-number">3.3.1.1.</span> <span class="toc-text">3.3.2 一种对预训练任务的复用，实现基于 Prompt 的统一范式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-1-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E7%94%9F%E6%88%90-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E%E7%94%9F%E6%88%90%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.1.</span> <span class="toc-text">3.3.2.1 万物皆可生成 —— 基于生成的 Prompt 范式统一</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-2-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E6%8A%BD%E5%8F%96-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E%E6%8A%BD%E5%8F%96%E5%BC%8F%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.2.</span> <span class="toc-text">3.3.2.2 万物皆可抽取 —— 基于抽取式阅读理解的 Prompt 范式统一</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-3-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E6%8E%A8%E7%90%86-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E-NLI-%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.3.</span> <span class="toc-text">3.3.2.3 万物皆可推理 —— 基于 NLI 的 Prompt 范式统一</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-3-%E5%8F%82%E6%95%B0%E6%9C%89%E6%95%88%E6%80%A7%E5%AD%A6%E4%B9%A0"><span class="toc-number">3.3.2.</span> <span class="toc-text">3.3.3 参数有效性学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%9D%A2%E5%90%91%E8%B6%85%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%A8%A1%E5%9E%8B%E7%9A%84-Prompt-Tuning"><span class="toc-number">3.3.3.</span> <span class="toc-text">3.4 面向超大规模模型的 Prompt-Tuning</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1-In-Context-Learning%EF%BC%88%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0%EF%BC%89"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">3.4.1 In-Context Learning（上下文学习）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-2-Instruction-tuning%EF%BC%88%E6%8C%87%E4%BB%A4%E5%AD%A6%E4%B9%A0%EF%BC%89"><span class="toc-number">3.3.4.</span> <span class="toc-text">3.4.2 Instruction-tuning（指令学习）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-LoRA%EF%BC%88Low-Rank-Adaptation%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">4. LoRA（Low-Rank Adaptation）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E4%B8%BA%E4%BD%95%E5%BC%95%E5%85%A5-LoRA"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 为何引入 LoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-Adapter-%E5%BC%95%E5%85%A5%E6%8E%A8%E7%90%86%E5%BB%B6%E8%BF%9F"><span class="toc-number">4.1.1.</span> <span class="toc-text">4.1.1 Adapter 引入推理延迟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-%E5%BE%88%E9%9A%BE%E7%9B%B4%E6%8E%A5%E4%BC%98%E5%8C%96-Prompt"><span class="toc-number">4.1.2.</span> <span class="toc-text">4.1.2 很难直接优化 Prompt</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-LoRA-%E7%9A%84%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 LoRA 的原理简介</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        大语言模型精调范式
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Cygnus Dark</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2023-08-09T16:00:00.000Z" class="dt-published" itemprop="datePublished">2023-08-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">人工智能</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LLM/" rel="tag">LLM</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>前言：什么是 Fine-tuning<br>在机器学习中，微调是一种迁移学习方法，其中将预训练模型的权重训练到新数据上。微调可以在神经网络的一部分层上进行，也可以在整个网络上进行。在第一种情况下，未进行微调的层被 &gt; “冻结”，在反向传播步骤中不会更新。</p>
+<p>对于某些结构，如卷积神经网络，通常会保持较早的层冻结，因为它们已经被证明可以捕捉较低级别的特征，而与此不同的是，后面的层通常关注与模型训练任务更相关的高级特征。<br>微调在自然语言处理（NLP）领域也很常见，尤其是在语言建模领域。像 OpenAI 的 GPT-2 这样的大型语言模型可以通过对下游 NLP 任务进行微调来获得比预训练模型通常能达到的更好结果。通常通过在大型和通用语料库上预训练的模型，将模型的参数作为起点，并添加从零开始训练的任务特定层来进行微调。完全微调模型也很常见，通常会产生更好的结果，但这是一种更加计&gt; 算密集的方法。完全微调还更容易过拟合，并可能导致模型在离群值分布上表现不佳。</p>
+<p>微调通常使用有监督学习方法进行，但也有使用弱监督方法微调模型的技术。最近，通过人类反馈的强化学习也被用于微调像 ChatGPT（这是 GPT-3 的微调版本）和 Sparrow 这样的语言模型。</p>
+</blockquote>
+<h1 id="1-Pre-train-Fine-tuning"><a href="#1-Pre-train-Fine-tuning" class="headerlink" title="1. Pre-train + Fine-tuning"></a>1. Pre-train + Fine-tuning</h1><h2 id="1-1-为什么要精调"><a href="#1-1-为什么要精调" class="headerlink" title="1.1 为什么要精调"></a>1.1 为什么要精调</h2><ol>
+<li>对于数据集本身很小的情况，从头开始训练具有几亿、几十亿甚至上百亿参数的大型神经网络是不现实的，因为越大的模型对数据量的要求越大，过拟合无法避免。这时候如果还想用上大型神经网络的超强特征提取能力，只能靠精调已经训练好的模型。</li>
+<li>可以降低训练成本（时间成本、计算架构成本、大语料成本）：如果使用导出特征向量的方法进行迁移学习，后期的训练成本非常低，用低配 GPU 就可以训练。</li>
+<li>前人花很大精力训练出来的模型在大概率上会比你自己从零开始搭的模型要强悍，没有必要重复造轮子。</li>
+</ol>
+<p>人工智能的快速发展推动了大模型的广泛应用，在语言、视觉、语音等领域的应用效果已经越来越好。但是，训练一个大模型需要巨大的计算资源和时间成本（计算架构壁垒、大语料壁垒），为了减少这种资源的浪费，模型精调已经成为一种流行的技术。</p>
+<p>模型精调是指在预训练模型的基础上，通过在小数据集上的训练来适应新的任务。</p>
+<p>传统的线性过程思维是” 因果一一对应 “，我们设定了什么规则和指令，结果就是完全一一按照我们的规则 &#x2F; 指令生成的，不会产生模糊和意外之外的结果。但是到了神经网络，尤其是超大型神经网络中，由于参数空间和语料库都十分巨大，因此在超高维的参数空间中，知识的储存是以一种很抽象 &#x2F; 高维的形式存在。通俗上理解就是：大模型通过学习了大语料之后，储存了大语料中包含的深层次知识，这些知识在不同的子领域都具备一定程度的迁移能力。所谓精调，本质上就是通过新领域语料库对模型的权重参数进行指向性精调（或者是增加一些新的结构，在新的结构上进行精调），从而使新的大模型具备在新的垂直领域上的预测路径。</p>
+<h2 id="1-2-如何进行精调"><a href="#1-2-如何进行精调" class="headerlink" title="1.2 如何进行精调"></a>1.2 如何进行精调</h2><p>AIGC（AI 芯片）的出现进一步加快了大模型的推广，可以提供更快的计算速度和更大的存储容量，精调主要有如下几种分类：</p>
+<ul>
+<li>精调所有层：将预训练模型的所有层都参与精调，以适应新的任务。</li>
+<li>精调顶层：只精调预训练模型的顶层，以适应新的任务。</li>
+<li>冻结底层：将预训练模型的底层固定不变，只对顶层进行精调。</li>
+<li>逐层精调：从底层开始，逐层精调预训练模型，直到所有层都被精调。</li>
+<li>迁移学习：将预训练模型的知识迁移到新的任务中，以提高模型性能。（这种方法通常使用精调顶层或冻结底层的方法。）<br>以下使用 Paddle 实现五种精调方法：</li>
+</ul>
+<h3 id="1-2-1-精调所有层"><a href="#1-2-1-精调所有层" class="headerlink" title="1.2.1 精调所有层"></a>1.2.1 精调所有层</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paddle</span><br><span class="line"><span class="keyword">from</span> paddlenlp.transformers <span class="keyword">import</span> GPT2Model, GPT2ForPretraining, GPT2PretrainingCriterion</span><br></pre></td></tr></table></figure>
+
+<h4 id="加载预训练模型"><a href="#加载预训练模型" class="headerlink" title="加载预训练模型"></a>加载预训练模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = GPT2ForPretraining.from_pretrained (<span class="string">&#x27;gpt2-medium-en&#x27;</span>)</span><br><span class="line">tokenizer = GPT2Tokenizer.from_pretrained (<span class="string">&#x27;gpt2-medium-en&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="定义新的分类头"><a href="#定义新的分类头" class="headerlink" title="定义新的分类头"></a>定义新的分类头</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">class_num = <span class="number">2</span></span><br><span class="line">cls = paddle.nn.Linear (model.config [<span class="string">&quot;hidden_size&quot;</span>], class_num)</span><br></pre></td></tr></table></figure>
+
+<h4 id="将新的分类头添加到模型中"><a href="#将新的分类头添加到模型中" class="headerlink" title="将新的分类头添加到模型中"></a>将新的分类头添加到模型中</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.cls = cls</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过精调所有层来适应新任务"><a href="#通过精调所有层来适应新任务" class="headerlink" title="通过精调所有层来适应新任务"></a>通过精调所有层来适应新任务</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">optimizer = paddle.optimizer.Adam (learning_rate=<span class="number">1e-5</span>, parameters=model.parameters ())</span><br><span class="line">criterion = GPT2PretrainingCriterion ()</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-2-精调顶层"><a href="#1-2-2-精调顶层" class="headerlink" title="1.2.2 精调顶层"></a>1.2.2 精调顶层</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paddle</span><br><span class="line"><span class="keyword">from</span> paddlenlp.transformers <span class="keyword">import</span> GPT2Model, GPT2ForPretraining, GPT2PretrainingCriterion</span><br></pre></td></tr></table></figure>
+
+<h4 id="加载预训练模型-1"><a href="#加载预训练模型-1" class="headerlink" title="加载预训练模型"></a>加载预训练模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = GPT2ForPretraining.from_pretrained (<span class="string">&#x27;gpt2-medium-en&#x27;</span>)</span><br><span class="line">tokenizer = GPT2Tokenizer.from_pretrained (<span class="string">&#x27;gpt2-medium-en&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="固定模型底层，只精调顶层"><a href="#固定模型底层，只精调顶层" class="headerlink" title="固定模型底层，只精调顶层"></a>固定模型底层，只精调顶层</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> model.parameters ():</span><br><span class="line">    param.trainable = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="定义新的分类头-1"><a href="#定义新的分类头-1" class="headerlink" title="定义新的分类头"></a>定义新的分类头</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">class_num = <span class="number">2</span></span><br><span class="line">cls = paddle.nn.Linear (model.config [<span class="string">&quot;hidden_size&quot;</span>], class_num)</span><br></pre></td></tr></table></figure>
+
+<h4 id="将新的分类头添加到模型中-1"><a href="#将新的分类头添加到模型中-1" class="headerlink" title="将新的分类头添加到模型中"></a>将新的分类头添加到模型中</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">model.cls = cls</span><br></pre></td></tr></table></figure>
+
+<h4 id="通过精调顶层来适应新任务"><a href="#通过精调顶层来适应新任务" class="headerlink" title="通过精调顶层来适应新任务"></a>通过精调顶层来适应新任务</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> param <span class="keyword">in</span> model.cls.parameters ():</span><br><span class="line">    param.trainable = <span class="literal">True</span></span><br><span class="line">optimizer = paddle.optimizer.Adam (learning_rate=<span class="number">1e-5</span>, parameters=model.cls.parameters ())</span><br><span class="line">criterion = paddle.nn.CrossEntropyLoss ()</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-3-冻结底层"><a href="#1-2-3-冻结底层" class="headerlink" title="1.2.3 冻结底层"></a>1.2.3 冻结底层</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paddle</span><br><span class="line"><span class="keyword">import</span> paddle.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">from</span> paddlenlp.transformers <span class="keyword">import</span> GPTForPretraining, GPTChineseTokenizer</span><br></pre></td></tr></table></figure>
+
+<h4 id="加载预训练模型和分词器"><a href="#加载预训练模型和分词器" class="headerlink" title="加载预训练模型和分词器"></a>加载预训练模型和分词器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = GPTForPretraining.from_pretrained (<span class="string">&#x27;gpt-cpm-large-cn&#x27;</span>)</span><br><span class="line">tokenizer = GPTChineseTokenizer.from_pretrained (<span class="string">&#x27;gpt-cpm-large-cn&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="构造数据集和数据加载器"><a href="#构造数据集和数据加载器" class="headerlink" title="构造数据集和数据加载器"></a>构造数据集和数据加载器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">train_ds = [[<span class="string">&#x27; 今天天气不错 &#x27;</span>], [<span class="string">&#x27; 明天要下雨 &#x27;</span>], [<span class="string">&#x27; 这个季节很适合旅游 &#x27;</span>]]</span><br><span class="line">train_ds = [&#123;<span class="string">&#x27;text&#x27;</span>: text&#125; <span class="keyword">for</span> text <span class="keyword">in</span> train_ds]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">batch_iter</span> (data, batch_size):</span><br><span class="line">    num_batches = <span class="built_in">len</span> (data) //batch_sizeif <span class="built_in">len</span> (data) % batch_size != <span class="number">0</span>:</span><br><span class="line">        num_batches += <span class="number">1</span><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span> (num_batches):</span><br><span class="line">        batch = data [i * batch_size: (i + <span class="number">1</span>) * batch_size]</span><br><span class="line">        <span class="keyword">yield</span> batch</span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">2</span></span><br><span class="line">train_loader = paddle.io.DataLoader (train_ds, batch_size=batch_size, shuffle=<span class="literal">True</span>, drop_last=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="构造优化器和损失函数"><a href="#构造优化器和损失函数" class="headerlink" title="构造优化器和损失函数"></a>构造优化器和损失函数</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">optimizer = paddle.optimizer.AdamW (parameters=model.parameters (), learning_rate=<span class="number">1e-4</span>)</span><br><span class="line">criterion = F.cross_entropy</span><br></pre></td></tr></table></figure>
+
+<h4 id="冻结底层"><a href="#冻结底层" class="headerlink" title="冻结底层"></a>冻结底层</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> layer <span class="keyword">in</span> model.layers [:<span class="number">6</span>]:</span><br><span class="line">    layer.<span class="built_in">eval</span> ()</span><br><span class="line">    <span class="keyword">for</span> param <span class="keyword">in</span> layer.parameters ():</span><br><span class="line">        param.trainable = <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="精调模型"><a href="#精调模型" class="headerlink" title="精调模型"></a>精调模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">3</span>):</span><br><span class="line">    <span class="keyword">for</span> batch <span class="keyword">in</span> train_loader:</span><br><span class="line">        texts = [example [<span class="string">&#x27;text&#x27;</span>] <span class="keyword">for</span> example <span class="keyword">in</span> batch]</span><br><span class="line">        encoded_inputs = tokenizer (texts, return_attention_mask=<span class="literal">True</span>, return_length=<span class="literal">True</span>, padding=<span class="literal">True</span>)</span><br><span class="line">        input_ids = paddle.to_tensor (encoded_inputs [<span class="string">&#x27;input_ids&#x27;</span>])</span><br><span class="line">        attention_mask = paddle.to_tensor (encoded_inputs [<span class="string">&#x27;attention_mask&#x27;</span>])</span><br><span class="line">        logits = model (input_ids, attention_mask=attention_mask)[<span class="number">0</span>]</span><br><span class="line">        loss = criterion (logits.reshape (-<span class="number">1</span>, logits.shape [-<span class="number">1</span>]), input_ids.reshape (-<span class="number">1</span>))</span><br><span class="line">        loss.backward ()</span><br><span class="line">        optimizer.step ()</span><br><span class="line">        optimizer.clear_grad ()</span><br><span class="line">    <span class="built_in">print</span> (<span class="string">f&#x27;Epoch <span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>: loss=<span class="subst">&#123;loss.numpy ():<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="保存精调后的模型"><a href="#保存精调后的模型" class="headerlink" title="保存精调后的模型"></a>保存精调后的模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paddle.save (model.state_dict (), <span class="string">&#x27;gpt-cpm-large-cn-finetuned</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="1-2-4-逐层精调"><a href="#1-2-4-逐层精调" class="headerlink" title="1.2.4 逐层精调"></a>1.2.4 逐层精调</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> paddle</span><br><span class="line"><span class="keyword">import</span> paddle.nn.functional <span class="keyword">as</span> F</span><br><span class="line"><span class="keyword">from</span> paddlenlp.transformers <span class="keyword">import</span> GPTForPretraining, GPTChineseTokenizer</span><br></pre></td></tr></table></figure>
+
+<h4 id="加载预训练模型和分词器-1"><a href="#加载预训练模型和分词器-1" class="headerlink" title="加载预训练模型和分词器"></a>加载预训练模型和分词器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">model = GPTForPretraining.from_pretrained (<span class="string">&#x27;gpt-cpm-large-cn&#x27;</span>)</span><br><span class="line">tokenizer = GPTChineseTokenizer.from_pretrained (<span class="string">&#x27;gpt-cpm-large-cn&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="构造数据集和数据加载器-1"><a href="#构造数据集和数据加载器-1" class="headerlink" title="构造数据集和数据加载器"></a>构造数据集和数据加载器</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">train_ds = [[<span class="string">&#x27; 今天天气不错 &#x27;</span>], [<span class="string">&#x27; 明天要下雨 &#x27;</span>], [<span class="string">&#x27; 这个季节很适合旅游 &#x27;</span>]]</span><br><span class="line">train_ds = [&#123;<span class="string">&#x27;text&#x27;</span>: text&#125; <span class="keyword">for</span> text <span class="keyword">in</span> train_ds]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">batch_iter</span> (data, batch_size):</span><br><span class="line">    num_batches = <span class="built_in">len</span> (data) //batch_sizeif <span class="built_in">len</span> (data) % batch_size != <span class="number">0</span>:</span><br><span class="line">        num_batches += <span class="number">1</span><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span> (num_batches):</span><br><span class="line">        batch = data [i * batch_size: (i + <span class="number">1</span>) * batch_size]</span><br><span class="line">        <span class="keyword">yield</span> batch</span><br><span class="line"></span><br><span class="line">batch_size = <span class="number">2</span></span><br><span class="line">train_loader = paddle.io.DataLoader (train_ds, batch_size=batch_size, shuffle=<span class="literal">True</span>, drop_last=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="构造优化器和损失函数-1"><a href="#构造优化器和损失函数-1" class="headerlink" title="构造优化器和损失函数"></a>构造优化器和损失函数</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">optimizer = paddle.optimizer.AdamW (parameters=model.parameters (), learning_rate=<span class="number">1e-4</span>)</span><br><span class="line">criterion = F.cross_entropy</span><br></pre></td></tr></table></figure>
+
+<h4 id="迁移学习精调模型"><a href="#迁移学习精调模型" class="headerlink" title="迁移学习精调模型"></a>迁移学习精调模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span> (<span class="number">3</span>):</span><br><span class="line">    <span class="keyword">for</span> batch <span class="keyword">in</span> train_loader:</span><br><span class="line">        texts = [example [<span class="string">&#x27;text&#x27;</span>] <span class="keyword">for</span> example <span class="keyword">in</span> batch]</span><br><span class="line">        encoded_inputs = tokenizer (texts, return_attention_mask=<span class="literal">True</span>, return_length=<span class="literal">True</span>, padding=<span class="literal">True</span>)</span><br><span class="line">        input_ids = paddle.to_tensor (encoded_inputs [<span class="string">&#x27;input_ids&#x27;</span>])</span><br><span class="line">        attention_mask = paddle.to_tensor (encoded_inputs [<span class="string">&#x27;attention_mask&#x27;</span>])</span><br><span class="line">        logits = model (input_ids, attention_mask=attention_mask)[<span class="number">0</span>]</span><br><span class="line">        loss = criterion (logits.reshape (-<span class="number">1</span>, logits.shape [-<span class="number">1</span>]), input_ids.reshape (-<span class="number">1</span>))</span><br><span class="line">        loss.backward ()</span><br><span class="line">        optimizer.step ()</span><br><span class="line">        optimizer.clear_grad ()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;Epoch <span class="subst">&#123;epoch + <span class="number">1</span>&#125;</span>: loss=<span class="subst">&#123;loss.numpy ():<span class="number">.4</span>f&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h4 id="保存精调后的模型-1"><a href="#保存精调后的模型-1" class="headerlink" title="保存精调后的模型"></a>保存精调后的模型</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">paddle.save(model.state_dict (), <span class="string">&#x27;gpt-cpm-large-cn-finetuned-transfer-learning.pdparams&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-Lightweight-finetuning-技术"><a href="#2-Lightweight-finetuning-技术" class="headerlink" title="2. Lightweight-finetuning 技术"></a>2. Lightweight-finetuning 技术</h1><p>随着计算算力的不断增加，以 transformer 为主要架构的预训练模型进入了百花齐放的时代。经过海量数据训练的模型相比于一般的深度模型而言，包含更多的参数，动辄数十亿、数百亿。在针对不同下游任务做精调时，存储和训练这种大模型是十分昂贵且耗时的。更麻烦的是，如果每一个垂直领域都要重新训练一个新的” 庞然大物 “出来，显然在时间和空间上都是不可接受的。<br>为了解决这个问题，各种 lightweight-finetuning 的方法被提了出来，相比于全参数精调，只需要以一个较小的训练和存储代价就可以取得和全模型精调相当的结果，大幅度降低了资源和时间成本。</p>
+<h2 id="2-1-Adapters-tune"><a href="#2-1-Adapters-tune" class="headerlink" title="2.1 Adapters-tune"></a>2.1 Adapters-tune</h2><p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-1.png" alt="img"></p>
+<p>首先，adapter 方法的原理并不复杂，它是通过在原始的预训练模型中的每个 transformer block 中加入一些参数可训练的模块实现的。<br>假设原始的预训练模型的参数为 ω，加入的 adapter 参数为 υ，在针对不同下游任务进行调整时，只需要将预训练参数固定住，只针对 adapter 参数 υ 进行训练。通常情况下，参数量 υ&lt;&lt;ω, 因此在对多个下游任务调整时，只需要调整极小数量的参数，大大的提高了预训练模型的扩展性和实用性。<br>对于 adapter 模块的网络组成，不同文章中针对不同任务略有不同。但是比较一致的结论是，bottleneck 形式的两层全连接神经网络就已经可以满足要求。每个 transformer 层中有两个 adapter 模块，在每个 adapter 模块中，先将经过多头注意力和前馈层输出的 output 做一个降维的映射。经过一个非线性激活层后，再将特征矢量映射回原始的维度。在下游训练任务中，只更新 adapter 模块和 layer Norm 层（下图中的绿色部分）。</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-2.png" alt="img"></p>
+<p>相比于预训练模型的全参数精调，Adapter 方法的优势十分明显：</p>
+<ul>
+<li>针对不同下游任务可保持预训练模型不变，仅需训练 adapter 模块的少量参数，训练代价小，可移植性强。</li>
+<li>对于不同任务的连续学习（continual learning）而言，由于在训练不同任务时只需要训练不同的 adapter，其他模型参数保持不变，避免了在学习新任务时对过往任务的遗忘。</li>
+</ul>
+<p>huggingface 开源了 transformer 库，在原来框架的基础上增添了 adapter 模块的训练和扩展，只需要在原来的训练脚本中更改不超过两行的代码，就可以针对不同的下游任务无缝训练新的 adapter 模块，并且整个 adapter 模块的参数和原始的预训练模型参数是完全独立存储的。</p>
+<h1 id="3-Pre-train-Prompt-tuning-Predict"><a href="#3-Pre-train-Prompt-tuning-Predict" class="headerlink" title="3. Pre-train + Prompt-tuning + Predict"></a>3. Pre-train + Prompt-tuning + Predict</h1><h2 id="3-1-什么是-Prompt-Tuning"><a href="#3-1-什么是-Prompt-Tuning" class="headerlink" title="3.1 什么是 Prompt-Tuning"></a>3.1 什么是 Prompt-Tuning</h2><p>自从 GPT、EMLO、BERT 的相继提出，以 Pre-training + Fine-tuning 的模式在诸多自然语言处理（NLP）任务中被广泛使用，其先在 Pre-training 阶段通过一个模型在大规模无监督语料上预先训练一个预训练语言模型（Pre-trained Language Model，PLM），然后在 Fine-tuning 阶段基于训练好的语言模型在具体的下游任务上再次进行精调（Fine-tuning），以获得适应下游任务的模型。这种模式在诸多任务的表现上超越了传统的监督学习方法，不论在工业生产、科研创新中均作为新的主流方式。然而，这套模式也存在着一些问题：</p>
+<ul>
+<li>在大多数的下游任务精调时，下游任务的目标与预训练的目标差距过大导致提升效果不明显</li>
+<li>精调过程中依赖大量的监督语料等</li>
+</ul>
+<p>因此，以 GPT-3、PET 为首提出了 Prompt-Tuning（一种基于预训练语言模型的新的精调范式），其旨在通过添加模板的方法来避免引入额外的参数，从而让语言模型可以在小样本（Few-shot）或零样本（Zero-shot）场景下达到理想的效果。</p>
+<p>Prompt-Tuning 又可以称为 Prompt、Prompting、Prompt-based Fine-tuning 等。</p>
+<p>简单的来说，Prompt-Tuning 的动机旨在解决目前传统 Fine-tuning 的两个痛点问题：</p>
+<ul>
+<li>降低语义差异（Bridge the gap between Pre-training and Fine-tuning）：预训练任务主要以 Masked Language Modeling（MLM）为主，而下游任务则重新引入新的训练参数，因此两个阶段的目标通常有较大差异。</li>
+<li>避免过拟合（Overfitting of the head）：由于在 Fine-tuning 阶段需要新引入额外的参数以适配相应的任务需要，因此在样本数量有限的情况容易发生过拟合，降低了模型的泛化能力。</li>
+</ul>
+<h2 id="3-2-Prompt-Tuning-的基本过程"><a href="#3-2-Prompt-Tuning-的基本过程" class="headerlink" title="3.2 Prompt-Tuning 的基本过程"></a>3.2 Prompt-Tuning 的基本过程</h2><p>Prompt-Tuning 执行如下步骤：</p>
+<ul>
+<li>构建模板（Template Construction）：通过人工定义、自动搜索、文本生成等方法，生成与给定句子相关的一个含有 [MASK] 标记的模板。例如 It was [MASK].，并拼接到原始的文本中，获得 Prompt-Tuning 的输入：[CLS] I like the Disney films very much. [SEP] It was [MASK]. [SEP]。将其喂入 BERT 模型中，并复用预训练好的 MLM 分类器，即可直接得到 [MASK] 预测的各个 token 的概率分布。</li>
+<li>标签词映射（Label Word Verbalizer）：因为 [MASK] 部分我们只对部分词感兴趣，因此需要建立一个映射关系。例如如果 [MASK] 预测的词是 “great”，则认为是 positive 类，如果是 “terrible”，则认为是 negative 类。不同的句子应该有不同的模板和标签词，因为每个句子可能期望预测出来的标签词都不同，因此如何最大化的寻找当前任务更加合适的模板和标签词是 Prompt-tuning 非常重要的挑战。</li>
+<li>训练：根据 Verbalizer，则可以获得指定标签词的预测概率分布，并采用交叉信息熵进行训练。此时因为只对预训练好的 MLM head 进行精调，所以避免了过拟合问题。</li>
+</ul>
+<blockquote>
+<p>引入的模板和标签词本质上也属于一种数据增强，通过添加提示的方式引入先验知识。prompt-tuning 相比于传统的 fine-tune 范式，最大的创新点就在于引入了”context template“的概念，通过预定义的模板，大幅度限定了模型精调的优化方向，减少了搜索空间，使得 fine-tune 出来的模型在具体的任务领域有更好的泛化性能，甚至具备 zero-shot 的能力。</p>
+</blockquote>
+<h2 id="3-3-Prompt-Tuning-的本质"><a href="#3-3-Prompt-Tuning-的本质" class="headerlink" title="3.3 Prompt-Tuning 的本质"></a>3.3 Prompt-Tuning 的本质</h2><p>最初的 Prompt-Tuning 主旨在于设计 Template 和 Verbalizer（即 Pattern-Verbalizer Pair）来解决基于预训练模型的小样本文本分类，然而事实上，NLP 领域涉及到很多除了分类以外其他大量复杂的任务，例如抽取、问答、生成、翻译等。这些任务都有独特的任务特性，并不是简单的 PVP 就可以解决的，<br>以下为三个关于 Prompt 的本质：</p>
+<ul>
+<li>一种对任务的指令，可以作为一种信息增强。</li>
+<li>一种对预训练任务的复用，实现基于 Prompt 的统一范式。</li>
+<li>一种参数有效性学习。</li>
+</ul>
+<h3 id="3-3-1-一种对任务的指令，可以作为一种信息增强"><a href="#3-3-1-一种对任务的指令，可以作为一种信息增强" class="headerlink" title="3.3.1 一种对任务的指令，可以作为一种信息增强"></a>3.3.1 一种对任务的指令，可以作为一种信息增强</h3><blockquote>
+<p>简单的来说，就是告诉模型需要做什么任务，输出什么内容。</p>
+</blockquote>
+<p>当数据集不同（乃至样本不同）的时候，我们期望模型能够自适应的选择不同的模板，这也相当于说不同的任务会有其对应的提示词信息。这一类具备任务特性的模板可以称之为指令（Instruction）。</p>
+<p>下面展示几个任务设计的指令模板：</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-3.png" alt="img"></p>
+<p>看似设计指令是一件容易的事情，但是在真实使用过程中，预训练模型很难 “理解” 这些指令，根据研究工作发现，主要总结如下几个原因：</p>
+<ul>
+<li>预训练模型不够大：我们常使用的 BERT-base、BERT-large、RoBERTa-base 和 RoBERTa-large 只有不到 10 亿参数，相比于现如今 GPT-3、OPT 等只能算作小模型，有工作发现，小模型在进行 Prompt Tuning 的时候会比 Fine-tuning 效果差，是因为小模型很容易受到模板的影响。对比一下传统的 Fine-tuning，每个样本的输入几乎都是不同的，然而基于 Prompt 的方法中，所有的样本输入都会包含相同的指令，这就导致小模型很容易受到这些指令带来的干扰。</li>
+<li>缺乏指令相关的训练：这些小模型在预训练阶段没有专门学习过如何理解一些特殊的指令。</li>
+</ul>
+<h4 id="3-3-2-一种对预训练任务的复用，实现基于-Prompt-的统一范式"><a href="#3-3-2-一种对预训练任务的复用，实现基于-Prompt-的统一范式" class="headerlink" title="3.3.2 一种对预训练任务的复用，实现基于 Prompt 的统一范式"></a>3.3.2 一种对预训练任务的复用，实现基于 Prompt 的统一范式</h4><p>我们需要思考，上述所讲的内容为什么要设计 Template（和 Verbalizer）。<br>回顾之前我们介绍的几个预训练语言模型，我们发现目前绝大多数的双向预训练语言模型都包含 Masked Language Modeling（MLM），单向预训练语言模型都包含 Autoregressive Language Modeling（ALM），这些任务是预训练目标，本质上是预测被 mask 的位置的词，在训练时让模型理解语言的上下文信息。之所以设计模板和指令，就是希望在下游任务时能够复用这些预训练的目标，避免引入新的参数而导致过拟合。</p>
+<p>因此，我们可以将 Prompt 升华到一个新的高度，即 Prompt Tuning 的本质是复用预训练语言模型在预训练阶段所使用的目标和参数。<br>由于绝大多数的语言模型都采用 MLM 或 ALM 进行训练，所以我们现如今所看到的大多数基于 Prompt 的分类都要设计 Template 和 Verbalizer。那么我们是否可以极大化地利用 MLM 和 ALM 的先验知识在不同的下游任务上获得更好的表现？是否可以设计一个全新的预训练任务来满足一些下游任务的需求呢？</p>
+<p>我们介绍几个充分利用这个思想的方法：</p>
+<ul>
+<li>万物皆可生成：将所有任务统一为文本生成，极大化利用单向语言模型目标。</li>
+<li>万物皆可抽取：将所有任务统一为抽取式阅读理解，并设计抽取式预训练目标。</li>
+<li>万物皆可推理：将所有任务建模为自然语言推断（Natural Language Inference）或相似度匹配任务。</li>
+</ul>
+<h5 id="3-3-2-1-万物皆可生成-——-基于生成的-Prompt-范式统一"><a href="#3-3-2-1-万物皆可生成-——-基于生成的-Prompt-范式统一" class="headerlink" title="3.3.2.1 万物皆可生成 —— 基于生成的 Prompt 范式统一"></a>3.3.2.1 万物皆可生成 —— 基于生成的 Prompt 范式统一</h5><p>在含有单向 Transformer 的语言模型中（例如 GPT、BART），都包含自回归训练目标，即基于上一个 token 来预测当前的 token，而双向语言模型中的 MLM 可以视为只生成一个 token 的自回归模型，为此，我们则可以将分类任务视为一种特殊的文本生成，并配上 Verbalizer，这样，所有的 NLP 任务都可以统一为生成任务。针对不同的任务，只需要提供对应的指令和模板即可（由于是使用单向语言模型，因此没有 mask token，需要生成的部分置于文本末尾）。</p>
+<p>下面给出几个事例：<br><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-4.png" alt="img"></p>
+<h5 id="3-3-2-2-万物皆可抽取-——-基于抽取式阅读理解的-Prompt-范式统一"><a href="#3-3-2-2-万物皆可抽取-——-基于抽取式阅读理解的-Prompt-范式统一" class="headerlink" title="3.3.2.2 万物皆可抽取 —— 基于抽取式阅读理解的 Prompt 范式统一"></a>3.3.2.2 万物皆可抽取 —— 基于抽取式阅读理解的 Prompt 范式统一</h5><p>基于生成的方法存在如下缺点：</p>
+<ul>
+<li>必须让待生成的部分置于文本末尾，此时会约束指令和模板的设计，不利于灵活运用。</li>
+<li>由于是开放式生成，生成的内容无法控制，且依赖于文本的长度等。</li>
+<li>对于一些具有条件限制的任务，例如多项选择、信息抽取等，生成的内容或许不符合这些条件。例如在做实体抽取的时候，需要确保生成的实体是在文本中出现的。</li>
+</ul>
+<p>为此，“万物皆可抽取” 的思想可以解决此类问题，其思想指将所有自然语言理解任务转换为抽取式阅读理解的形式，下面给出形式化的定义：</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-5.png" alt="img"></p>
+<p>除了抽取式阅读理解任务外，其他 NLP 任务如何转换为这个形式呢？本质上还是在如何设计模板和指令。<br>下面给出几个事例： </p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-6.png" alt="img"></p>
+<p>可以发现，如果是分类型的任务，只需要通过指令和模板的形式将所有类别罗列起来即可。在训练时，可以采用两种方法：</p>
+<ul>
+<li>设计抽取式预训练目标，在无标注语料上进行自监督训练。</li>
+<li>按照阅读理解的形式统一所有任务范式，并混合所有任务进行 Cross-task Learning，再在新的任务上进行测试。</li>
+</ul>
+<h5 id="3-3-2-3-万物皆可推理-——-基于-NLI-的-Prompt-范式统一"><a href="#3-3-2-3-万物皆可推理-——-基于-NLI-的-Prompt-范式统一" class="headerlink" title="3.3.2.3 万物皆可推理 —— 基于 NLI 的 Prompt 范式统一"></a>3.3.2.3 万物皆可推理 —— 基于 NLI 的 Prompt 范式统一</h5><p>另外一个方法则是将所有任务建模为 NLI 形式，其与上文介绍的 MPT 比较类似，除了 MPT 以外，《Entailment as Few-Shot Learner》（EFL）和 NSP-BERT 也是类似的方法，其思想是复用 BERT 中的 Next Sentence Prediction（NSP）的预训练目标。下面给出几个事例：</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-7.png" alt="img"></p>
+<h3 id="3-3-3-参数有效性学习"><a href="#3-3-3-参数有效性学习" class="headerlink" title="3.3.3 参数有效性学习"></a>3.3.3 参数有效性学习</h3><p>实现 Prompt-Tuning 只需要考虑如何设计模板或指令，而模型和训练目标则都是复用预训练阶段的，即在整个训练过程中，无须添加任何参数（或只需要添加非常少量的与模板有关的参数），而其他参数都是训练好的。基于这个思想，我们再一次将 Prompt 升华到更高的层面 ——Prompt 的本质是参数有效性学习（Parameter-Efficient Learning，PEL）。</p>
+<ul>
+<li>参数有效性学习的背景：在一般的计算资源条件下，大规模的模型（例如 GPT-3）很难再进行精调，因为所有的参数都需要计算梯度并进行更新，消耗时间和空间资源。为了解决这个问题，参数有效性学习被提出，其旨在确保模型效果不受太大影响的条件下尽可能地提高训练的时间和空间效率。</li>
+<li>参数有效性训练：在参数有效性学习过程中，大模型中只需要指定或额外添加少量的可训练参数，而其余的参数全部冻结，这样可以大大提高模型的训练效率的同时，确保指标不会受到太大影响。</li>
+</ul>
+<h3 id="3-4-面向超大规模模型的-Prompt-Tuning"><a href="#3-4-面向超大规模模型的-Prompt-Tuning" class="headerlink" title="3.4 面向超大规模模型的 Prompt-Tuning"></a>3.4 面向超大规模模型的 Prompt-Tuning</h3><p>Prompt-Tuning 发展的过程中，有诸多工作发现，对于超过 10 亿参数量的模型来说，Prompt-Tuning 所带来的增益远远高于标准的 Fine-tuning，小样本甚至是零样本的性能也能够极大地被激发出来。</p>
+<ul>
+<li>得益于这些模型的参数量足够大</li>
+<li>训练过程中使用了足够多的语料</li>
+<li>同时设计的预训练任务足够有效</li>
+</ul>
+<p>下面介绍几个面向超大规模的 Prompt-Tuning 方法，分别为：</p>
+<ul>
+<li>上下文学习 In-Context Learning（ICL）：直接挑选少量的训练样本作为该任务的提示。</li>
+<li>指令学习 Instruction-tuning：构建任务指令集，促使模型根据任务指令做出反馈。</li>
+<li>思维链 Chain-of-Thought（CoT）：给予或激发模型具有推理和解释的信息，通过线性链式的模式指导模型生成合理的结果。详见：ICL、CoT、ToT、AutoGPT</li>
+</ul>
+<h4 id="3-4-1-In-Context-Learning（上下文学习）"><a href="#3-4-1-In-Context-Learning（上下文学习）" class="headerlink" title="3.4.1 In-Context Learning（上下文学习）"></a>3.4.1 In-Context Learning（上下文学习）</h4><p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-8.png" alt="img"></p>
+<p>目前，向语言模型通过 prompting 可以在小样本场景下得到很大的成功，例如 GPT-3。然而原始的语言模型在预训练时并没有针对 in-context 进行优化。<br>在 fine-tuning 阶段，给定一系列的训练任务，每一个任务都有相应的指令，并对应的少量样本（输入 &#x2F; 输出对）。在测试阶段，给定一个新的不可见任务，包含对应的指令和少量样本（输入 &#x2F; 输出对），旨在让模型能够对测试样本预测其类别。<br>如下图，给定一个情感分析任务：</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-9.png" alt="img"></p>
+<h3 id="3-4-2-Instruction-tuning（指令学习）"><a href="#3-4-2-Instruction-tuning（指令学习）" class="headerlink" title="3.4.2 Instruction-tuning（指令学习）"></a>3.4.2 Instruction-tuning（指令学习）</h3><p>面向超大规模模型第二个 Prompt 技术是指令学习。Prompt 的本质之一是任务的一种指令，因此，在对大规模模型进行精调时，可以为各种类型的任务定义指令，并进行训练，来提高模型对不同任务的泛化能力。什么是指令呢？如下图所示：</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-10.png" alt="img"></p>
+<p>假设是一个 Question Generation 任务，那么可以为这个任务定义一些指令：</p>
+<ul>
+<li>Title：任务的名称；</li>
+<li>Definition：任务的定义，说明这个任务的本质和目的；</li>
+<li>Things to avoid：说明这个任务的注意事项，例如需要避免什么等等；</li>
+<li>Positive &#x2F; Negative Examples：给出正确和错误的例子，作为提示；</li>
+<li>Prompt：当前任务的提示信息；</li>
+</ul>
+<p>当许多任务都按照这种模式定义好模板，让模型在指令化后的数据上进行精调，模型将可以学会如何看到指令做预测。</p>
+<p>InstructionGPT：</p>
+<blockquote>
+<p>三个步骤：（1）监督微调（SFT），（2）奖励模型（RM）训练，以及（3）通过该奖励模型上的近端策略优化（PPO）进行强化学习</p>
+</blockquote>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-11.png" alt="img"></p>
+<h1 id="4-LoRA（Low-Rank-Adaptation）"><a href="#4-LoRA（Low-Rank-Adaptation）" class="headerlink" title="4. LoRA（Low-Rank Adaptation）"></a>4. LoRA（Low-Rank Adaptation）</h1><p>精调大规模语言模型到特殊领域和任务是自然语言处理的重要课题之一。但随着模型规模的不断扩大，精调模型的所有参数（所谓 full fine-tuning）的可行性变得越来越低。关于什么是 LoRA 可以参考原始论文。</p>
+<h2 id="4-1-为何引入-LoRA"><a href="#4-1-为何引入-LoRA" class="headerlink" title="4.1 为何引入 LoRA"></a>4.1 为何引入 LoRA</h2><p>为解决精调大规模语言模型到不同领域和任务的挑战，如上文提到已有多种方案。但这些方法存在如下问题：</p>
+<ul>
+<li>Adapters 引入额外的推理延迟 (由于增加了模型层数)</li>
+<li>Prefix-Tuning 难于训练，且预留给 prompt 的序列挤占了下游任务的输入序列空间，影响模型性能</li>
+</ul>
+<h3 id="4-1-1-Adapter-引入推理延迟"><a href="#4-1-1-Adapter-引入推理延迟" class="headerlink" title="4.1.1 Adapter 引入推理延迟"></a>4.1.1 Adapter 引入推理延迟</h3><p>显然，使用 Adapter 增加模型层数会增加推理的时长。<br>简单来说，adapter 就是固定原有的参数，并添加一些额外参数用于精调。Adapter 会在原始的 transformer block 中添加 2 个 adapter，一个在多头注意力后面，另一个这是 FFN 后面。显然，adapter 会在模型中添加额外的层，这些层会导致大模型在推理时需要更多的 GPU 通信，而且也会约束模型并行。这些问题都将导致模型推理变慢。</p>
+<h3 id="4-1-2-很难直接优化-Prompt"><a href="#4-1-2-很难直接优化-Prompt" class="headerlink" title="4.1.2 很难直接优化 Prompt"></a>4.1.2 很难直接优化 Prompt</h3><p>prefix-tuning 方法是受语言模型 in-context learning 能力的启发，只要有合适的上下文则语言模型可以很好的解决自然语言任务。但是，针对特定的任务找到离散 token 的前缀需要花费很长时间，prefix-tuning 提出使用连续的 virtual token embedding 来替换离散 token。</p>
+<p>具体来说，对于 transformer 中的每一层，都在句子表征前面插入可训练的 virtual token embedding。对于自回归模型（GPT 系列），在句子前添加连续前缀，prefix-tuning 并没有添加太多的额外参数。但是，prefix-tuning 难以优化，且会减少下游任务的序列长度，一定程度上会影响模型性能。 </p>
+<h2 id="4-2-LoRA-的原理简介"><a href="#4-2-LoRA-的原理简介" class="headerlink" title="4.2 LoRA 的原理简介"></a>4.2 LoRA 的原理简介</h2><p>LoRA 本质是对大模型精调的一种方法，当预训练大模型很大时，重新训练所有模型参数的精调变得不可太行，例如 GPT3 的 175B。提出的 LoRA 采用低秩分解矩阵，冻结了预训练模型的权重，并将低秩分解矩阵注入到 transformer 的每一层，减少了训练参数量。</p>
+<p><img src="/images/%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83-12.png" alt="img"></p>
+<p>如上图所示们对于某个线性层而言，左边是模型原有的参数，在训练过程中是冻结不变的，右边是 LoRA 方法增加的低秩分解矩阵。<br>在原始 PLM 旁边增加一个旁路，做一个降维再升维的操作，来模拟所谓的 intrinsic rank。训练的时候固定 PLM 的参数，只训练降维矩阵 A 与升维矩阵 B。而模型的输入输出维度不变，输出时将 BA 与 PLM 的参数叠加。用随机高斯分布初始化 A，用 0 矩阵初始化 B，保证训练的开始此旁路矩阵依然是 0 矩阵。</p>
+<p>训练过程中，优化器只优化右边这一部分的参数，两边的矩阵会共用一个模型的输入，分别进行计算，最后将两边的计算结果相加作为模块的输出。不同于之前的参数高效精调的 adapter：</p>
+<ul>
+<li>adapter 是在模块的后面接上一个 mlp，对模块的计算结果进行一个后处理。</li>
+<li>LoRA 是和模块的计算并行的去做一个 mlp，和原来的模块共用一个输入。<br>大模型其实是过参数化的， 有更小的一个内在维度，大模型在任务适配（instruction-tune）过程中，参数的改变量是低秩的。</li>
+</ul>
+<p>总之，基于大模型的内在低秩特性，增加旁路矩阵来模拟全模型参数精调，LoRA 通过简单有效的方案来达成轻量精调的目的。 </p>
+<p>引申一下，GPT 的本质是对训练数据的有效压缩，从而发现数据内部的逻辑与联系，LoRA 的思想与之有相通之处，原模型虽大，但起核心作用的参数是低秩的，通过增加旁路，达到事半功倍的效果。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/categories/">Category</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-Pre-train-Fine-tuning"><span class="toc-number">1.</span> <span class="toc-text">1. Pre-train + Fine-tuning</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%B2%BE%E8%B0%83"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 为什么要精调</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E7%B2%BE%E8%B0%83"><span class="toc-number">1.2.</span> <span class="toc-text">1.2 如何进行精调</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-1-%E7%B2%BE%E8%B0%83%E6%89%80%E6%9C%89%E5%B1%82"><span class="toc-number">1.2.1.</span> <span class="toc-text">1.2.1 精调所有层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.1.1.</span> <span class="toc-text">加载预训练模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4"><span class="toc-number">1.2.1.2.</span> <span class="toc-text">定义新的分类头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%86%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%A8%A1%E5%9E%8B%E4%B8%AD"><span class="toc-number">1.2.1.3.</span> <span class="toc-text">将新的分类头添加到模型中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%B2%BE%E8%B0%83%E6%89%80%E6%9C%89%E5%B1%82%E6%9D%A5%E9%80%82%E5%BA%94%E6%96%B0%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.1.4.</span> <span class="toc-text">通过精调所有层来适应新任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-2-%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82"><span class="toc-number">1.2.2.</span> <span class="toc-text">1.2.2 精调顶层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B-1"><span class="toc-number">1.2.2.1.</span> <span class="toc-text">加载预训练模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BA%E5%AE%9A%E6%A8%A1%E5%9E%8B%E5%BA%95%E5%B1%82%EF%BC%8C%E5%8F%AA%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82"><span class="toc-number">1.2.2.2.</span> <span class="toc-text">固定模型底层，只精调顶层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4-1"><span class="toc-number">1.2.2.3.</span> <span class="toc-text">定义新的分类头</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%86%E6%96%B0%E7%9A%84%E5%88%86%E7%B1%BB%E5%A4%B4%E6%B7%BB%E5%8A%A0%E5%88%B0%E6%A8%A1%E5%9E%8B%E4%B8%AD-1"><span class="toc-number">1.2.2.4.</span> <span class="toc-text">将新的分类头添加到模型中</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%80%9A%E8%BF%87%E7%B2%BE%E8%B0%83%E9%A1%B6%E5%B1%82%E6%9D%A5%E9%80%82%E5%BA%94%E6%96%B0%E4%BB%BB%E5%8A%A1"><span class="toc-number">1.2.2.5.</span> <span class="toc-text">通过精调顶层来适应新任务</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-3-%E5%86%BB%E7%BB%93%E5%BA%95%E5%B1%82"><span class="toc-number">1.2.3.</span> <span class="toc-text">1.2.3 冻结底层</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%88%86%E8%AF%8D%E5%99%A8"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">加载预训练模型和分词器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">构造数据集和数据加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E4%BC%98%E5%8C%96%E5%99%A8%E5%92%8C%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">构造优化器和损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%BB%E7%BB%93%E5%BA%95%E5%B1%82"><span class="toc-number">1.2.3.4.</span> <span class="toc-text">冻结底层</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%B2%BE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.5.</span> <span class="toc-text">精调模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%B2%BE%E8%B0%83%E5%90%8E%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.6.</span> <span class="toc-text">保存精调后的模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-2-4-%E9%80%90%E5%B1%82%E7%B2%BE%E8%B0%83"><span class="toc-number">1.2.3.7.</span> <span class="toc-text">1.2.4 逐层精调</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%88%86%E8%AF%8D%E5%99%A8-1"><span class="toc-number">1.2.3.8.</span> <span class="toc-text">加载预训练模型和分词器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E6%95%B0%E6%8D%AE%E9%9B%86%E5%92%8C%E6%95%B0%E6%8D%AE%E5%8A%A0%E8%BD%BD%E5%99%A8-1"><span class="toc-number">1.2.3.9.</span> <span class="toc-text">构造数据集和数据加载器</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E4%BC%98%E5%8C%96%E5%99%A8%E5%92%8C%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0-1"><span class="toc-number">1.2.3.10.</span> <span class="toc-text">构造优化器和损失函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E7%B2%BE%E8%B0%83%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.2.3.11.</span> <span class="toc-text">迁移学习精调模型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%9D%E5%AD%98%E7%B2%BE%E8%B0%83%E5%90%8E%E7%9A%84%E6%A8%A1%E5%9E%8B-1"><span class="toc-number">1.2.3.12.</span> <span class="toc-text">保存精调后的模型</span></a></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-Lightweight-finetuning-%E6%8A%80%E6%9C%AF"><span class="toc-number">2.</span> <span class="toc-text">2. Lightweight-finetuning 技术</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Adapters-tune"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Adapters-tune</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Pre-train-Prompt-tuning-Predict"><span class="toc-number">3.</span> <span class="toc-text">3. Pre-train + Prompt-tuning + Predict</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-%E4%BB%80%E4%B9%88%E6%98%AF-Prompt-Tuning"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 什么是 Prompt-Tuning</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-Prompt-Tuning-%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%BF%87%E7%A8%8B"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 Prompt-Tuning 的基本过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-Prompt-Tuning-%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 Prompt-Tuning 的本质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-1-%E4%B8%80%E7%A7%8D%E5%AF%B9%E4%BB%BB%E5%8A%A1%E7%9A%84%E6%8C%87%E4%BB%A4%EF%BC%8C%E5%8F%AF%E4%BB%A5%E4%BD%9C%E4%B8%BA%E4%B8%80%E7%A7%8D%E4%BF%A1%E6%81%AF%E5%A2%9E%E5%BC%BA"><span class="toc-number">3.3.1.</span> <span class="toc-text">3.3.1 一种对任务的指令，可以作为一种信息增强</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-3-2-%E4%B8%80%E7%A7%8D%E5%AF%B9%E9%A2%84%E8%AE%AD%E7%BB%83%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%A4%8D%E7%94%A8%EF%BC%8C%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E-Prompt-%E7%9A%84%E7%BB%9F%E4%B8%80%E8%8C%83%E5%BC%8F"><span class="toc-number">3.3.1.1.</span> <span class="toc-text">3.3.2 一种对预训练任务的复用，实现基于 Prompt 的统一范式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-1-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E7%94%9F%E6%88%90-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E%E7%94%9F%E6%88%90%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.1.</span> <span class="toc-text">3.3.2.1 万物皆可生成 —— 基于生成的 Prompt 范式统一</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-2-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E6%8A%BD%E5%8F%96-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E%E6%8A%BD%E5%8F%96%E5%BC%8F%E9%98%85%E8%AF%BB%E7%90%86%E8%A7%A3%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.2.</span> <span class="toc-text">3.3.2.2 万物皆可抽取 —— 基于抽取式阅读理解的 Prompt 范式统一</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-3-2-3-%E4%B8%87%E7%89%A9%E7%9A%86%E5%8F%AF%E6%8E%A8%E7%90%86-%E2%80%94%E2%80%94-%E5%9F%BA%E4%BA%8E-NLI-%E7%9A%84-Prompt-%E8%8C%83%E5%BC%8F%E7%BB%9F%E4%B8%80"><span class="toc-number">3.3.1.1.3.</span> <span class="toc-text">3.3.2.3 万物皆可推理 —— 基于 NLI 的 Prompt 范式统一</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-3-%E5%8F%82%E6%95%B0%E6%9C%89%E6%95%88%E6%80%A7%E5%AD%A6%E4%B9%A0"><span class="toc-number">3.3.2.</span> <span class="toc-text">3.3.3 参数有效性学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E9%9D%A2%E5%90%91%E8%B6%85%E5%A4%A7%E8%A7%84%E6%A8%A1%E6%A8%A1%E5%9E%8B%E7%9A%84-Prompt-Tuning"><span class="toc-number">3.3.3.</span> <span class="toc-text">3.4 面向超大规模模型的 Prompt-Tuning</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-4-1-In-Context-Learning%EF%BC%88%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0%EF%BC%89"><span class="toc-number">3.3.3.1.</span> <span class="toc-text">3.4.1 In-Context Learning（上下文学习）</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-2-Instruction-tuning%EF%BC%88%E6%8C%87%E4%BB%A4%E5%AD%A6%E4%B9%A0%EF%BC%89"><span class="toc-number">3.3.4.</span> <span class="toc-text">3.4.2 Instruction-tuning（指令学习）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-LoRA%EF%BC%88Low-Rank-Adaptation%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">4. LoRA（Low-Rank Adaptation）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-%E4%B8%BA%E4%BD%95%E5%BC%95%E5%85%A5-LoRA"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 为何引入 LoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-Adapter-%E5%BC%95%E5%85%A5%E6%8E%A8%E7%90%86%E5%BB%B6%E8%BF%9F"><span class="toc-number">4.1.1.</span> <span class="toc-text">4.1.1 Adapter 引入推理延迟</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-%E5%BE%88%E9%9A%BE%E7%9B%B4%E6%8E%A5%E4%BC%98%E5%8C%96-Prompt"><span class="toc-number">4.1.2.</span> <span class="toc-text">4.1.2 很难直接优化 Prompt</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-LoRA-%E7%9A%84%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 LoRA 的原理简介</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&text=大语言模型精调范式"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&is_video=false&description=大语言模型精调范式"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=大语言模型精调范式&body=Check out this article: https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&title=大语言模型精调范式"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&name=大语言模型精调范式&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2023/08/09/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%B2%BE%E8%B0%83%E8%8C%83%E5%BC%8F/&t=大语言模型精调范式"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Cygnus Dark
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
