@@ -1,13 +1,13 @@
 ---
 title: 个人简介
-date: 2017-05-31 10:05:56
+date: 2023-08-01 10:00:00
 layout: about
 ---
 
-Welcome to Cygnus Garden (My Personal Blog 😊), I’m Cygnus Dark (*￣︶￣).
+Welcome to Cygnus Garden, my personal blog 😊.
 
 My Background:
-🏫 Education: BSc in Mathematics and Economics, Augustana University, USA.
+🏫 Education: B.Sc. from Augustana University, USA.
 🏖️ Profession: Sr. Data Engineer at Baidu, since 2022.
 📚 Project: https://github.com/cygnusdark/Mall
 💻 Skills: 
