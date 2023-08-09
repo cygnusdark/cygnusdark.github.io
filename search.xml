@@ -4,6 +4,56 @@
   
     
     <entry>
+      <title>LoRA：大语言模型的低阶自适应方法</title>
+      <link href="/2023/08/08/LoRA%EF%BC%9A%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BD%8E%E9%98%B6%E8%87%AA%E9%80%82%E5%BA%94%E6%96%B9%E6%B3%95/"/>
+      <url>/2023/08/08/LoRA%EF%BC%9A%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%BD%8E%E9%98%B6%E8%87%AA%E9%80%82%E5%BA%94%E6%96%B9%E6%B3%95/</url>
+      
+        <content type="html"><![CDATA[<h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>神经网络包含很多全连接层，其借助于矩阵乘法得以实现，然而，很多全连接层的权重矩阵都是满秩的。当针对特定任务进行微调后，模型中权重矩阵其实具有很低的本征秩（intrinsic rank），因此，论文的作者认为权重更新的那部分参数矩阵尽管随机投影到较小的子空间，仍然可以有效的学习，可以理解为针对特定的下游任务这些权重矩阵就不要求满秩。</p><h2 id="2-技术原理"><a href="#2-技术原理" class="headerlink" title="2. 技术原理"></a>2. 技术原理</h2><p>LoRA方法的核心思想就是通过低秩分解来模拟参数的改变量，从而以极小的参数量来实现大模型的间接训练。<br>在涉及到矩阵相乘的模块，在原始的PLM旁边增加一个新的通路，通过前后两个矩阵A,B相乘，第一个矩阵A负责降维，第二个矩阵B负责升维，中间层维度为r，从而来模拟所谓的本征秩（intrinsic rank）。</p><p><img src="/images/lora-1.png" alt="img"></p><p>可训练层维度和预训练模型层维度一致为d，先将维度d通过全连接层降维至r，再从r通过全连接层映射回d维度，其中，r&lt;&lt;d，r是矩阵的秩，这样矩阵计算就从d x d变为d x r + r x d，参数量减少很多。</p><p><img src="/images/lora-2.png" alt="img"></p><p>在下游任务训练时，固定模型的其他参数，只优化新增的两个矩阵的权重参数，将PLM跟新增的通路两部分的结果加起来作为最终的结果（两边通路的输入跟输出维度是一致的），即h&#x3D;Wx+BAx。第一个矩阵的A的权重参数会通过高斯函数初始化，而第二个矩阵的B的权重参数则会初始化为零矩阵，这样能保证训练开始时新增的通路BA&#x3D;0从而对模型结果没有影响。</p><p><img src="/images/lora-3.png" alt="img"></p><p>在推理时，将左右两部分的结果加到一起即可，h&#x3D;Wx+BAx&#x3D;(W+BA)x，所以只要将训练完成的矩阵乘积BA跟原本的权重矩阵W加到一起作为新权重参数替换原本PLM的W即可，对于推理来说，不会增加额外的计算资源。</p><p>此外，Transformer的权重矩阵包括Attention模块里用于计算query, key, value的Wq，Wk，Wv以及多头attention的Wo,以及MLP层的权重矩阵，LoRA只应用于Attention模块中的4种权重矩阵，而且通过消融实验发现同时调整 Wq 和 Wv 会产生最佳结果。</p><p>实验还发现，保证权重矩阵的种类的数量比起增加隐藏层维度r更为重要，增加r并不一定能覆盖更加有意义的子空间。</p><p><img src="/images/lora-4.png" alt="img"></p><p>那么关于秩的选择，通常情况下，rank为4，8，16即可。</p><p><img src="/images/lora-5.png" alt="img"></p><p>通过实验也发现，在众多数据集上LoRA在只训练极少量参数的前提下，最终在性能上能和全量微调匹配，甚至在某些任务上优于全量微调。</p><h2 id="3-论文原文"><a href="#3-论文原文" class="headerlink" title="3. 论文原文"></a>3. 论文原文</h2><p><a href="/file/lora.pdf">lora.pdf</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 人工智能 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LLM </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>快速排序</title>
+      <link href="/2023/08/07/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/"/>
+      <url>/2023/08/07/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/</url>
+      
+        <content type="html"><![CDATA[<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">QuickSort</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">quickSort</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (left &lt; right) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">pivotIndex</span> <span class="operator">=</span> partition(arr, left, right);</span><br><span class="line">            quickSort(arr, left, pivotIndex - <span class="number">1</span>);</span><br><span class="line">            quickSort(arr, pivotIndex + <span class="number">1</span>, right);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">partition</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pivot</span> <span class="operator">=</span> arr[right];</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> left - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> left; j &lt; right; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (arr[j] &lt;= pivot) &#123;</span><br><span class="line">                i++;</span><br><span class="line">                swap(arr, i, j);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        swap(arr, i + <span class="number">1</span>, right);</span><br><span class="line">        <span class="keyword">return</span> i + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">swap</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> i, <span class="type">int</span> j)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">temp</span> <span class="operator">=</span> arr[i];</span><br><span class="line">        arr[i] = arr[j];</span><br><span class="line">        arr[j] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 算法 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 排序算法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>扩散模型-图像生成的一大进步</title>
       <link href="/2023/08/03/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B-%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E7%9A%84%E4%B8%80%E5%A4%A7%E8%BF%9B%E6%AD%A5/"/>
       <url>/2023/08/03/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B-%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90%E7%9A%84%E4%B8%80%E5%A4%A7%E8%BF%9B%E6%AD%A5/</url>
