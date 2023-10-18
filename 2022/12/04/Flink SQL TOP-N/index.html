@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 创建 Source1234567891011121314151617CREATE TABLE &#96;kafka_json_source_table&#96; (  user_id        INT,  item_id        INT,  category_id    INT,  user_behavior  VARCHAR,  time_stamp     TIMESTAMP(3),  WAT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flink SQL TOP-N">
+<meta property="og:url" content="https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/index.html">
+<meta property="og:site_name" content="Cygnus Garden">
+<meta property="og:description" content="1. 创建 Source1234567891011121314151617CREATE TABLE &#96;kafka_json_source_table&#96; (  user_id        INT,  item_id        INT,  category_id    INT,  user_behavior  VARCHAR,  time_stamp     TIMESTAMP(3),  WAT">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-12-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-18T09:13:58.679Z">
+<meta property="article:author" content="Cygnus Dark">
+<meta property="article:tag" content="Flink">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.ico" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Flink SQL TOP-N</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2023/06/30/%E6%8A%80%E6%9C%AF%E8%A7%84%E5%88%9250%E9%97%AE/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2022/11/30/Flink%20%E4%BF%9D%E8%AF%81%E6%95%B0%E6%8D%AE%E4%B8%80%E8%87%B4%E6%80%A7/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&text=Flink SQL TOP-N"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&is_video=false&description=Flink SQL TOP-N"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flink SQL TOP-N&body=Check out this article: https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&name=Flink SQL TOP-N&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&t=Flink SQL TOP-N"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA-Source"><span class="toc-number">1.</span> <span class="toc-text">1. 创建 Source</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA-Sink"><span class="toc-number">2.</span> <span class="toc-text">2. 创建 Sink</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%88%9B%E5%BB%BA%E4%B8%B4%E6%97%B6%E8%A7%86%E5%9B%BE%EF%BC%8C%E7%94%A8%E4%BA%8E%E5%B0%86%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4%E3%80%81%E7%AA%97%E5%8F%A3%E8%81%9A%E5%90%88"><span class="toc-number">3.</span> <span class="toc-text">3. 创建临时视图，用于将原始数据过滤、窗口聚合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%9F%E8%AE%A1%E6%AF%8F%E5%88%86%E9%92%9F-Top3-%E8%B4%AD%E4%B9%B0%E7%A7%8D%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">4. 统计每分钟 Top3 购买种类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">5. 总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Flink SQL TOP-N
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Cygnus Dark</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-12-04T16:00:00.000Z" class="dt-published" itemprop="datePublished">2022-12-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Flink/" rel="tag">Flink</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-创建-Source"><a href="#1-创建-Source" class="headerlink" title="1. 创建 Source"></a>1. 创建 Source</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `kafka_json_source_table` (</span><br><span class="line">  user_id        <span class="type">INT</span>,</span><br><span class="line">  item_id        <span class="type">INT</span>,</span><br><span class="line">  category_id    <span class="type">INT</span>,</span><br><span class="line">  user_behavior  <span class="type">VARCHAR</span>,</span><br><span class="line">  time_stamp     <span class="type">TIMESTAMP</span>(<span class="number">3</span>),</span><br><span class="line">  WATERMARK <span class="keyword">FOR</span> time_stamp <span class="keyword">AS</span> time_stamp <span class="operator">-</span> <span class="type">INTERVAL</span> <span class="string">&#x27;3&#x27;</span> <span class="keyword">SECOND</span></span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">  <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;kafka&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;topic&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;oceanus_advanced4_input&#x27;</span>,    <span class="comment">-- 替换为您要消费的 Topic</span></span><br><span class="line">  <span class="string">&#x27;scan.startup.mode&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;latest-offset&#x27;</span>, <span class="comment">-- 可以是 latest-offset / earliest-offset / specific-offsets / group-offsets / timestamp 的任何一种</span></span><br><span class="line">  <span class="string">&#x27;properties.bootstrap.servers&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;10.0.0.29:9092&#x27;</span>,  <span class="comment">-- 替换为您的 Kafka 连接地址</span></span><br><span class="line">  <span class="string">&#x27;properties.group.id&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;testGroup&#x27;</span>,     <span class="comment">-- 必选参数, 一定要指定 Group ID</span></span><br><span class="line">  <span class="string">&#x27;format&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;json&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;json.fail-on-missing-field&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;false&#x27;</span>,  <span class="comment">-- 如果设置为 false, 则遇到缺失字段不会报错。</span></span><br><span class="line">  <span class="string">&#x27;json.ignore-parse-errors&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;true&#x27;</span>      <span class="comment">-- 如果设置为 true，则忽略任何解析报错。</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-创建-Sink"><a href="#2-创建-Sink" class="headerlink" title="2. 创建 Sink"></a>2. 创建 Sink</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `jdbc_upsert_sink_table` (</span><br><span class="line">    win_start     <span class="type">TIMESTAMP</span>(<span class="number">3</span>),</span><br><span class="line">    category_id   <span class="type">INT</span>,</span><br><span class="line">    buy_count     <span class="type">INT</span>,</span><br><span class="line">    <span class="keyword">PRIMARY</span> KEY (win_start,category_id) <span class="keyword">NOT</span> ENFORCED</span><br><span class="line">) <span class="keyword">WITH</span> (</span><br><span class="line">    <span class="string">&#x27;connector&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;jdbc&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;url&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;jdbc:postgresql://10.0.0.236:5432/postgres?currentSchema=public&amp;reWriteBatchedInserts=true&#x27;</span>,              <span class="comment">-- 请替换为您的实际 MySQL 连接参数</span></span><br><span class="line">    <span class="string">&#x27;table-name&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;oceanus_advanced4_output&#x27;</span>, <span class="comment">-- 需要写入的数据表</span></span><br><span class="line">    <span class="string">&#x27;username&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;root&#x27;</span>,                      <span class="comment">-- 数据库访问的用户名（需要提供 INSERT 权限）</span></span><br><span class="line">    <span class="string">&#x27;password&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;yourpassword&#x27;</span>,               <span class="comment">-- 数据库访问的密码</span></span><br><span class="line">    <span class="string">&#x27;sink.buffer-flush.max-rows&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;200&#x27;</span>,     <span class="comment">-- 批量输出的条数</span></span><br><span class="line">    <span class="string">&#x27;sink.buffer-flush.interval&#x27;</span> <span class="operator">=</span> <span class="string">&#x27;2s&#x27;</span>       <span class="comment">-- 批量输出的间隔</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-创建临时视图，用于将原始数据过滤、窗口聚合"><a href="#3-创建临时视图，用于将原始数据过滤、窗口聚合" class="headerlink" title="3. 创建临时视图，用于将原始数据过滤、窗口聚合"></a>3. 创建临时视图，用于将原始数据过滤、窗口聚合</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">VIEW</span> `kafka_json_source_view` <span class="keyword">AS</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">  TUMBLE_START(time_stamp,<span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">MINUTE</span>) <span class="keyword">AS</span> win_start,</span><br><span class="line">  category_id,</span><br><span class="line">  <span class="built_in">COUNT</span>(<span class="number">1</span>) <span class="keyword">AS</span> buy_count</span><br><span class="line"><span class="keyword">FROM</span> `kafka_json_source_table`</span><br><span class="line"><span class="keyword">WHERE</span> user_behavior <span class="operator">=</span> <span class="string">&#x27;buy&#x27;</span></span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> TUMBLE(time_stamp,<span class="type">INTERVAL</span> <span class="string">&#x27;1&#x27;</span> <span class="keyword">MINUTE</span>),category_id;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-统计每分钟-Top3-购买种类"><a href="#4-统计每分钟-Top3-购买种类" class="headerlink" title="4. 统计每分钟 Top3 购买种类"></a>4. 统计每分钟 Top3 购买种类</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `jdbc_upsert_sink_table`</span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">b.win_start,</span><br><span class="line">b.category_id,</span><br><span class="line"><span class="built_in">CAST</span>(b.buy_count <span class="keyword">AS</span> <span class="type">INT</span>) <span class="keyword">AS</span> buy_count</span><br><span class="line"><span class="keyword">FROM</span> (<span class="keyword">SELECT</span> <span class="operator">*</span></span><br><span class="line">          ,<span class="built_in">ROW_NUMBER</span>() <span class="keyword">OVER</span> (<span class="keyword">PARTITION</span> <span class="keyword">BY</span> win_start <span class="keyword">ORDER</span> <span class="keyword">BY</span> buy_count <span class="keyword">DESC</span>) <span class="keyword">AS</span> rn</span><br><span class="line">      <span class="keyword">FROM</span> `kafka_json_source_view`</span><br><span class="line">      ) b</span><br><span class="line"><span class="keyword">WHERE</span> b.rn <span class="operator">&lt;=</span> <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>本文使用 TUMBLE WINDOW 配合 ROW_NUMBER 函数，统计分析了每分钟内购买量前三的商品种类，用户可根据实际需求选择相应的窗口函数统计对应的 TopN。更多窗口函数的使用参考时间窗口函数。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/categories/">Category</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%88%9B%E5%BB%BA-Source"><span class="toc-number">1.</span> <span class="toc-text">1. 创建 Source</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%88%9B%E5%BB%BA-Sink"><span class="toc-number">2.</span> <span class="toc-text">2. 创建 Sink</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%88%9B%E5%BB%BA%E4%B8%B4%E6%97%B6%E8%A7%86%E5%9B%BE%EF%BC%8C%E7%94%A8%E4%BA%8E%E5%B0%86%E5%8E%9F%E5%A7%8B%E6%95%B0%E6%8D%AE%E8%BF%87%E6%BB%A4%E3%80%81%E7%AA%97%E5%8F%A3%E8%81%9A%E5%90%88"><span class="toc-number">3.</span> <span class="toc-text">3. 创建临时视图，用于将原始数据过滤、窗口聚合</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%9F%E8%AE%A1%E6%AF%8F%E5%88%86%E9%92%9F-Top3-%E8%B4%AD%E4%B9%B0%E7%A7%8D%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">4. 统计每分钟 Top3 购买种类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">5. 总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&text=Flink SQL TOP-N"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&is_video=false&description=Flink SQL TOP-N"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Flink SQL TOP-N&body=Check out this article: https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&title=Flink SQL TOP-N"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&name=Flink SQL TOP-N&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://cygnusdark.github.io/2022/12/04/Flink%20SQL%20TOP-N/&t=Flink SQL TOP-N"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2022-2023
+    Cygnus Dark
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
