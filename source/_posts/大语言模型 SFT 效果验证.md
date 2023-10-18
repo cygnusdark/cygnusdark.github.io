@@ -1,5 +1,5 @@
 ---
-title: 大语言模型SFT效果验证
+title: 大语言模型 SFT 效果验证
 date: 2023-08-10
 categories:  人工智能
 tags:

@@ -8,12 +8,12 @@ Welcome to Cygnus Garden, my personal blog 😊.
 
 My Background:
 🏫 Education: B.Sc. from Augustana University, USA.
-🏖️ Profession: Sr. Data Engineer at Baidu, since 2022.
+🏖️ Profession: Sr. Data Engineer at Baidu ( 2022 - 2023).
 📚 Project: https://github.com/cygnusdark/Mall
 💻 Skills: 
 * Language: Java, Python, Scala
-* AI: LLM, ML, DL
-* Big Data: Flink, Spark, Hadoop, Doris, Clickhouse, Kafka
+* AI: LLM, Langchain, Milvus, NLP, Recommender System
+* Big Data: Flink, Spark, Hadoop, Doris, Clickhouse, Kafka, Elasticsearch
 
 
 
